@@ -1,0 +1,42 @@
+# BA-Kit Skills
+
+Skills are **agent-agnostic** guided BA activities. Each is a single Markdown file with a
+structured front-matter header and step instructions. A skill produces one structured artifact
+into the active task and enforces the human-in-the-loop review gate.
+
+## Available skills
+
+| Skill | Produces | Prerequisite |
+|-------|----------|--------------|
+| `ba.specify-requirements` | `artifacts/requirements.md` | none |
+| `ba.analyze-docs` | `artifacts/docs-analysis.md` | none |
+| `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
+| `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
+
+## How to add a new skill (no core edits required)
+
+BA-Kit is modular: a new skill is a drop-in file plus its template. You do **not** modify any
+existing skill, script, or template.
+
+1. **Copy the skill template**: `cp _skill-template.md ba.<verb>-<noun>.md`.
+2. **Fill the header**: `name`, `summary`, `inputs`, `prerequisites`, `output`, `template`.
+3. **Write the steps** following the contract in
+   `specs/001-ba-kit-framework/contracts/skill-contract.md`:
+   resolve the active task → check prerequisites → gather inputs → clarify → produce a `draft`
+   artifact with traceability/assumptions → present for review (never self-approve).
+4. **Add a template** under `templates/artifacts/<template>.md` using the front-matter
+   convention in `templates/artifacts/_frontmatter.md`. If your artifact `type` needs new
+   conditional required fields, extend `scripts/sh/check-artifact.sh` accordingly.
+5. **Re-run the installer** (`./install.sh`) to map the new skill into your agent.
+
+That's it — the new skill works alongside the others without touching them (validates FR-019 /
+SC-004).
+
+## Agent-agnostic validation note (FR-009a)
+
+These skills avoid agent-proprietary features and rely only on plain prompt instructions plus
+the shell helpers, so they run consistently across agents (e.g., Copilot, Claude, Cursor). To
+spot-check: run `ba.specify-requirements` on the same inputs in a second agent and confirm the
+produced `requirements.md` conforms to the same template and passes `check-artifact.sh`.
+
+<!-- Record cross-agent validation results here as you verify them. -->
