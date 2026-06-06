@@ -24,9 +24,12 @@ fi
 TEMPLATE="$BAKIT_HOME/templates/project/project.md"
 [ -f "$TEMPLATE" ] || bakit_die "project template not found: $TEMPLATE"
 
+KB_TEMPLATE="$BAKIT_HOME/templates/project/kb-index.md"
+[ -f "$KB_TEMPLATE" ] || bakit_die "project kb-index template not found: $KB_TEMPLATE"
+
 TODAY=$(bakit_today)
 
-mkdir -p "$PROJECT_DIR/tasks"
+mkdir -p "$PROJECT_DIR/tasks" "$PROJECT_DIR/kb"
 
 # Populate template: front-matter fields + title placeholder.
 sed \
@@ -37,10 +40,20 @@ sed \
   -e "s/{{TITLE}}/$RAW_NAME/g" \
   "$TEMPLATE" > "$PROJECT_DIR/project.md"
 
+# Seed the shared project-level knowledge base index.
+sed \
+  -e "s/^id: \"\"/id: $SLUG-kb/" \
+  -e "s/^title: \"\"/title: \"$RAW_NAME\"/" \
+  -e "s/^created: \"\"/created: $TODAY/" \
+  -e "s/^updated: \"\"/updated: $TODAY/" \
+  -e "s/{{TITLE}}/$RAW_NAME/g" \
+  "$KB_TEMPLATE" > "$PROJECT_DIR/kb/index.md"
+
 bakit_set_active "$SLUG" ""
 
 bakit_log "Created project '$SLUG' at $PROJECT_DIR"
 bakit_log "  - project.md"
 bakit_log "  - tasks/"
+bakit_log "  - kb/index.md   (shared project knowledge base)"
 bakit_log ""
 bakit_log "Next: ./scripts/sh/init-task.sh \"$SLUG\" \"<task name>\""

@@ -142,3 +142,44 @@ bakit_has_frontmatter() {
     END { if (!found) exit 1 }
   ' "$_file"
 }
+
+# --- Knowledge base resolution ---------------------------------------------
+#
+# Two-level knowledge base: a shared project-level kb/ and a per-task kb/.
+# Task-level knowledge takes precedence over project-level where they overlap.
+# Missing or empty knowledge bases MUST NOT be treated as errors — these
+# helpers print nothing and return non-zero so callers can degrade gracefully.
+
+# Path to the project-level kb/ directory.
+bakit_project_kb_dir() { printf '%s/kb' "$(bakit_project_dir "$1")"; }
+
+# Path to a task-level kb/ directory.
+bakit_task_kb_dir() {
+  printf '%s/tasks/%s/kb' "$(bakit_project_dir "$1")" "$2"
+}
+
+# Print the path to a kb/index.md if it exists, else return 1.
+# Usage: bakit_kb_index <kb-dir>
+bakit_kb_index() {
+  _kb="$1"
+  [ -d "$_kb" ] || return 1
+  [ -f "$_kb/index.md" ] || return 1
+  printf '%s/index.md' "$_kb"
+}
+
+# Print the resolved kb index paths to read for a project/task, project first
+# then task (task precedence: callers should let later entries override). Only
+# existing indexes are printed, one per line. Returns 1 if none exist.
+# Usage: bakit_kb_indexes <project> [task]
+bakit_kb_indexes() {
+  _proj="$1"; _task="${2:-}"; _any=1
+  if _idx=$(bakit_kb_index "$(bakit_project_kb_dir "$_proj")"); then
+    printf '%s\n' "$_idx"; _any=0
+  fi
+  if [ -n "$_task" ]; then
+    if _idx=$(bakit_kb_index "$(bakit_task_kb_dir "$_proj" "$_task")"); then
+      printf '%s\n' "$_idx"; _any=0
+    fi
+  fi
+  return "$_any"
+}

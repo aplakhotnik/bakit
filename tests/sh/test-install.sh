@@ -29,16 +29,31 @@ DEST="$WORKDIR/.github/prompts"
 
 # Scripts are now executable.
 [ -x "$CLONE/scripts/sh/init-project.sh" ] && ok "scripts made executable" || no "scripts made executable"
+[ -x "$CLONE/scripts/sh/next-step.sh" ] && ok "next-step.sh made executable" || no "next-step.sh made executable"
 
-# All four skills mapped into the destination.
+# All skills mapped into the destination (existing + new agent-driven ones).
+# A .github/prompts destination uses the VS Code '.prompt.md' extension.
 mapped=1
-for s in ba.specify-requirements ba.analyze-docs ba.write-stories ba.render-confluence; do
-  [ -f "$DEST/$s.md" ] || mapped=0
+for s in ba.specify-requirements ba.analyze-docs ba.write-stories ba.render-confluence \
+         ba.start-project ba.start-task ba.next; do
+  [ -f "$DEST/$s.prompt.md" ] || mapped=0
 done
-[ "$mapped" -eq 1 ] && ok "all skills mapped to destination" || no "all skills mapped to destination"
+[ "$mapped" -eq 1 ] && ok "all skills mapped with .prompt.md extension" || no "all skills mapped with .prompt.md extension"
 
 # Helper templates/internal files are NOT mapped (only ba.* skills).
-[ ! -f "$DEST/_skill-template.md" ] && ok "internal templates not mapped" || no "internal templates not mapped"
+[ ! -f "$DEST/_skill-template.prompt.md" ] && ok "internal templates not mapped" || no "internal templates not mapped"
+
+# A .github/prompts install enables prompt files via workspace settings (fresh run).
+SETTINGS="$WORKDIR/.vscode/settings.json"
+[ -f "$SETTINGS" ] && ok ".vscode/settings.json created" || no ".vscode/settings.json created"
+grep -q '"chat.promptFiles"' "$SETTINGS" 2>/dev/null \
+  && ok "chat.promptFiles enabled in settings" || no "chat.promptFiles enabled in settings"
+
+# Re-running is idempotent and does not clobber an existing settings.json.
+printf '%s\n' '{' '  "editor.tabSize": 2,' '  "chat.promptFiles": true' '}' > "$SETTINGS"
+( cd "$WORKDIR" && sh "$CLONE/install.sh" --dest "$DEST" >/dev/null 2>&1 )
+grep -q '"editor.tabSize"' "$SETTINGS" 2>/dev/null \
+  && ok "existing settings.json preserved on re-run" || no "existing settings.json preserved on re-run"
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

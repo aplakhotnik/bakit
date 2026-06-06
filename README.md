@@ -2,18 +2,29 @@
 
 A spec-driven framework for **Business Analysts** — inspired by
 [spec-kit](https://github.com/github/spec-kit), but for BA activities instead of software
-features. Clone it, run the installer, scaffold a standardized workspace, and run guided BA
-"skills" inside your AI coding agent.
+features. Clone it, run the installer, then drive everything from inside your AI agent: it
+scaffolds a standardized workspace for you and guides you skill-by-skill through the workflow.
 
 ## What you get
 
-- **Standardized workspace structure** — `Project → numbered Task → inputs/artifacts/deliverables`.
-- **Helper scripts** (POSIX shell) — scaffold projects/tasks, list artifacts, validate status.
+- **Agent-driven, guided flow** — start work by invoking skills, not by running scripts:
+  - `ba.start-project` — scaffold a project workspace (incl. a shared `kb/`)
+  - `ba.start-task` — scaffold a task (`inputs/artifacts/deliverables/kb`)
+  - `ba.next` — ask the workflow what to run next (approval-gated, click-ready)
+- **Standardized workspace structure** — `Project → numbered Task → inputs/artifacts/deliverables`,
+  each with a two-level knowledge base (`kb/`).
+- **Helper scripts** (POSIX shell) — scaffold projects/tasks, list artifacts, validate status,
+  resolve the next workflow step. Skills invoke these on your behalf.
 - **Agent-agnostic BA skills** — guided workflows that produce structured Markdown artifacts:
   - `ba.specify-requirements` — raw inputs → structured requirements
   - `ba.analyze-docs` — existing documents → extracted requirements, gaps, open questions
   - `ba.write-stories` — approved requirements → user stories with acceptance criteria
   - `ba.render-confluence` — approved artifact → local Confluence-ready Markdown
+- **Declarative workflow** — `workflow.md` defines the ordered skill chain and per-step approval
+  gates; it is the single source of truth for next-step suggestions.
+- **Two-level knowledge base + lightweight RLM** — a shared project `kb/` and per-task `kb/`,
+  each with an auto-seeded `index.md`. Skills read the index first and only recurse into details
+  when needed (Recursive-Language-Model style), so large inputs don't overwhelm context.
 - **Review gates & traceability** — every artifact carries `status: draft → approved` and
   provenance in YAML front-matter.
 
@@ -22,21 +33,68 @@ features. Clone it, run the installer, scaffold a standardized workspace, and ru
 ```sh
 # 1. Install (maps skills into your agent's prompt directory, makes scripts executable)
 ./install.sh                      # auto-detects agent; or: ./install.sh --agent copilot
+```
 
-# 2. Scaffold a project and a task
+Then drive the rest **from inside your agent** — you don't run scaffolding scripts by hand:
+
+```text
+ba.start-project   # "Start a project called payments-revamp"
+ba.start-task      # "Add a task: elicit-requirements"
+#   → drop notes/docs into the task's inputs/ folder
+ba.next            # asks the workflow what to run next, then you click the suggestion
+#   → e.g. ba.analyze-docs / ba.specify-requirements → ba.write-stories → ba.render-confluence
+```
+
+Prefer scripts? The same scaffolding is available directly:
+
+```sh
 ./scripts/sh/init-project.sh "payments-revamp"
 ./scripts/sh/init-task.sh "payments-revamp" "elicit-requirements"
-
-# 3. Add raw inputs, then run a skill in your agent
-#    (drop notes/docs into the task's inputs/ folder, then invoke ba.specify-requirements)
-
-# 4. Inspect status / validate artifacts
+./scripts/sh/next-step.sh                  # print the recommended next workflow step
 ./scripts/sh/list-artifacts.sh "payments-revamp"
 ./scripts/sh/check-artifact.sh workspace/payments-revamp/tasks/001-elicit-requirements/artifacts/requirements.md
 ```
 
 By default the workspace is created under `./workspace`. Override with the `BAKIT_WORKSPACE`
 environment variable.
+
+## First run in VS Code (Copilot)
+
+When you install with `--agent copilot`, the installer writes skills as
+`.github/prompts/ba.*.prompt.md` and enables VS Code's prompt-file discovery for the workspace
+(`chat.promptFiles: true` in `.vscode/settings.json`). For the `/` slash commands to appear:
+
+1. **Reload the window** — Command Palette → *Developer: Reload Window* (the prompt files are
+   scanned on load).
+2. **Trust the folder** — if VS Code shows the Workspace Trust prompt, choose *Trust*. In a
+   restricted (untrusted) workspace, workspace settings and prompt-file discovery are limited,
+   so the skills won't resolve until the folder is trusted. (Workspace Trust is a VS Code
+   security control; the installer intentionally does not try to bypass it.)
+
+Then type `/` in Copilot Chat and pick e.g. `/ba.start-project`. The installer never overwrites
+an existing `.vscode/settings.json`; if one exists without the key it tells you what to add.
+
+## The workflow (`workflow.md`)
+
+`workflow.md` declares the ordered chain and each step's approval gate:
+
+```text
+ba.analyze-docs → ba.specify-requirements → ba.write-stories → ba.render-confluence
+```
+
+`next-step.sh` (and the `ba.next` skill) read this manifest plus the current artifacts to tell
+you exactly what is runnable now and which artifact, if any, must be approved first. Every skill
+also ends with a **Next steps** block derived from the same manifest, so the guided path is
+consistent everywhere.
+
+## Two-level knowledge base & lightweight RLM
+
+Each project gets a shared `kb/` and each task its own `kb/`, both seeded with an `index.md`
+(`## Summary` + `## Entries`). Skills ground their work by reading the project index first, then
+the task index (task knowledge takes precedence). For large or multi-document inputs they apply a
+lightweight **Recursive Language Model** strategy — consult the index, then recurse into only the
+relevant entries in focused passes — degrading to a single pass for small inputs. A missing or
+empty `kb/` is never an error.
 
 ## Workflow & review gates
 
@@ -62,9 +120,10 @@ opaque content — so revisions and their rationale stay reviewable in git over 
 ```text
 bakit/
 ├── install.sh              # bootstrap / installer
+├── workflow.md             # declarative ordered skill chain + approval gates
 ├── scripts/sh/             # POSIX shell helper scripts (macOS/Linux)
 ├── scripts/ps/             # placeholder for planned Windows PowerShell parity
-├── templates/              # project + artifact templates
+├── templates/              # project + task (kb) + artifact templates
 ├── skills/                 # agent-agnostic BA skill definitions
 ├── memory/                 # BA principles surfaced to skills at runtime
 └── tests/sh/               # shell tests for the scripts

@@ -12,34 +12,55 @@ assumptions: []
 # User Stories: {{TITLE}}
 
 <!--
-  Each story derives from one or more approved requirements. Populate the
-  `derived_from` front-matter with the requirement ids covered here, and link
-  each story to its requirement(s) in its Traceability line.
+  User stories derived from APPROVED requirements. Populate `derived_from` with
+  the requirement ids covered here. Keep stories INVEST: Independent, Negotiable,
+  Valuable, Estimable, Small, Testable. Duplicate the story block for each story.
 -->
+
+## Overview
+
+<!-- One or two sentences: what this set of stories delivers and for whom.
+     Confluence: wrap as an info panel -> {panel:title=Overview} … {panel} -->
+
+> **Overview** — <what these stories deliver and the value they provide.>
+
+| Source requirements | Author | Last updated |
+|---------------------|--------|--------------|
+| <requirement id(s)> | <analyst> | {{DATE}} |
 
 ## US-001 — <short title>
 
-**Story**: As a `<role>`, I want `<capability>` so that `<benefit>`.
+> As a `<role>`, I want `<capability>` so that `<benefit>`.
 
-**Acceptance Criteria**:
+**Acceptance Criteria**
 
-1. **Given** <context>, **When** <action>, **Then** <outcome>.
-2. **Given** <context>, **When** <action>, **Then** <outcome>.
+1. **Given** <context>, **When** <action>, **Then** <observable outcome>.
+2. **Given** <context>, **When** <action>, **Then** <observable outcome>.
 
-**Traceability**: FR-001, FR-002
+**Open questions**
+
+- <ambiguity or question for the analyst/stakeholder, or "none">
 
 ---
 
 ## US-002 — <short title>
 
-**Story**: As a `<role>`, I want `<capability>` so that `<benefit>`.
+> As a `<role>`, I want `<capability>` so that `<benefit>`.
 
-**Acceptance Criteria**:
+**Acceptance Criteria**
 
-1. **Given** <context>, **When** <action>, **Then** <outcome>.
+1. **Given** <context>, **When** <action>, **Then** <observable outcome>.
 
-**Traceability**: FR-003
+**Open questions**
+
+- <ambiguity or question, or "none">
+
+---
+
+<!-- Duplicate the story block above for each additional story. -->
 
 ## Assumptions
+
+<!-- Mirror the `assumptions` front-matter list; never present these as fact. -->
 
 - …

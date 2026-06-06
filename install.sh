@@ -68,23 +68,57 @@ detect_dest() {
 if dest=$(detect_dest); then
   mkdir -p "$dest"
   log "Installing BA skills into: $dest"
+  # VS Code Copilot only registers files named '*.prompt.md' (in .github/prompts)
+  # as slash commands. Other agents use plain '*.md' in their command dirs.
+  case "$dest" in
+    */.github/prompts) ext=".prompt.md" ;;
+    *)                 ext=".md" ;;
+  esac
   for skill in "$SKILLS_DIR"/ba.*.md; do
     [ -e "$skill" ] || continue
-    cp "$skill" "$dest/"
-    log "  + $(basename "$skill")"
+    base=$(basename "$skill" .md)
+    cp "$skill" "$dest/$base$ext"
+    log "  + $base$ext"
   done
+
+  # VS Code only exposes .github/prompts/*.prompt.md as '/' slash commands when
+  # the 'chat.promptFiles' setting is enabled. Turn it on for the workspace so a
+  # fresh open works without manual setup. Safe-merge: never clobber an existing
+  # settings.json; if the key is already managed, leave it untouched.
+  case "$dest" in
+    */.github/prompts)
+      ws_root="${dest%/.github/prompts}"
+      settings="$ws_root/.vscode/settings.json"
+      if [ ! -f "$settings" ]; then
+        mkdir -p "$ws_root/.vscode"
+        printf '%s\n' '{' '  "chat.promptFiles": true' '}' > "$settings"
+        log ""
+        log "Enabled prompt files for this workspace: $settings"
+      elif grep -q '"chat.promptFiles"' "$settings" 2>/dev/null; then
+        log ""
+        log "Prompt files already configured in $settings"
+      else
+        log ""
+        warn "Add '\"chat.promptFiles\": true' to $settings so the skills appear as /commands."
+      fi ;;
+  esac
+
   log ""
-  log "BA-Kit installed. Restart your agent if needed, then invoke a skill, e.g. 'ba.specify-requirements'."
+  log "BA-Kit installed. Reload VS Code (Developer: Reload Window), trust the folder"
+  log "if prompted, then type '/' in Copilot Chat and pick a skill, e.g. /ba.start-project."
 else
   warn "Could not auto-detect an agent prompt directory."
   log ""
   log "BA skills live in: $SKILLS_DIR"
-  log "Copy the ba.*.md files into your agent's prompt/command directory, or re-run with:"
-  log "  ./install.sh --agent <copilot|claude|cursor|generic>"
+  log "Re-run targeting your agent so they install to the right place:"
+  log "  ./install.sh --agent copilot   # VS Code  -> .github/prompts/*.prompt.md"
+  log "  ./install.sh --agent claude     # Claude   -> .claude/commands/*.md"
+  log "  ./install.sh --agent cursor     # Cursor   -> .cursor/commands/*.md"
   log "  ./install.sh --dest <your-agent-prompt-dir>"
 fi
 
 log ""
-log "Scaffold your first workspace:"
-log "  ./scripts/sh/init-project.sh \"my-project\""
-log "  ./scripts/sh/init-task.sh \"my-project\" \"my-first-task\""
+log "Get started (agent-driven — just invoke these skills in your agent):"
+log "  ba.start-project   # scaffolds a project workspace + shared kb/"
+log "  ba.start-task      # scaffolds a task (inputs/artifacts/deliverables/kb)"
+log "  ba.next            # asks the workflow what to run next"

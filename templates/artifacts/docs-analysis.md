@@ -20,11 +20,13 @@ assumptions: []
 ## Extracted Requirements
 
 <!--
-  Each extracted requirement MUST cite the source document and section/location.
+  Each extracted requirement MUST cite its origin: a source document and section
+  (`<!-- source: inputs/<file> § <section> -->`) or a knowledge-base entry
+  (`<!-- source: kb/<entry> -->`).
 -->
 
 - **ER-001**: … <!-- source: inputs/<file> § <section> -->
-- **ER-002**: … <!-- source: inputs/<file> § <section> -->
+- **ER-002**: … <!-- source: kb/<entry> -->
 
 ## Gaps & Inconsistencies
 

@@ -28,6 +28,14 @@ sh "$SCRIPTS/init-project.sh" "Demo" >/dev/null 2>&1
 [ -d "$PROJ/tasks/001-elicit-requirements/artifacts" ] && ok "artifacts/ created" || no "artifacts/ created"
 [ -d "$PROJ/tasks/001-elicit-requirements/deliverables" ] && ok "deliverables/ created" || no "deliverables/ created"
 
+# 2b. Task-level knowledge base seeded with a valid index.
+[ -d "$PROJ/tasks/001-elicit-requirements/kb" ] && ok "task kb/ created" || no "task kb/ created"
+[ -f "$PROJ/tasks/001-elicit-requirements/kb/index.md" ] && ok "task kb/index.md created" || no "task kb/index.md created"
+grep -q '^## Summary' "$PROJ/tasks/001-elicit-requirements/kb/index.md" \
+  && ok "task kb index has Summary" || no "task kb index has Summary"
+grep -q '^## Entries' "$PROJ/tasks/001-elicit-requirements/kb/index.md" \
+  && ok "task kb index has Entries" || no "task kb index has Entries"
+
 # 3. Second task -> sequential 002.
 sh "$SCRIPTS/init-task.sh" "Demo" "Write Stories" >/dev/null 2>&1
 [ -d "$PROJ/tasks/002-write-stories" ] && ok "second task numbered 002" || no "second task numbered 002"

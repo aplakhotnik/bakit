@@ -19,10 +19,11 @@ assumptions: []
 
 <!--
   Numbered, testable, prioritized. Use MoSCoW or P1/P2/P3 priority.
-  Cite the source input where a requirement was derived from one.
+  Cite the origin of each derived requirement: a knowledge-base entry
+  (`<!-- source: kb/<entry> -->`) or a raw input (`<!-- source: inputs/<file> -->`).
 -->
 
-- **FR-001** (P1): The system MUST … <!-- source: inputs/<file> -->
+- **FR-001** (P1): The system MUST … <!-- source: kb/<entry> | inputs/<file> -->
 - **FR-002** (P2): Users MUST be able to …
 
 ## Non-Functional Requirements

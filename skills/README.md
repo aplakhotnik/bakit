@@ -6,12 +6,37 @@ into the active task and enforces the human-in-the-loop review gate.
 
 ## Available skills
 
+### Orchestration (agent-driven flow)
+
+These drive the workspace and the guided path for you — you invoke them instead of running
+shell scripts by hand:
+
+| Skill | Does | Prerequisite |
+|-------|------|--------------|
+| `ba.start-project` | scaffold a project (`project.md`, `tasks/`, shared `kb/`) | none |
+| `ba.start-task` | scaffold a task (`inputs/artifacts/deliverables/kb`) | a project |
+| `ba.next` | resolve & suggest the next workflow step (approval-gated) | a task |
+
+### BA activities (produce artifacts)
+
 | Skill | Produces | Prerequisite |
 |-------|----------|--------------|
 | `ba.specify-requirements` | `artifacts/requirements.md` | none |
 | `ba.analyze-docs` | `artifacts/docs-analysis.md` | none |
 | `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
 | `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
+
+The ordered chain and per-step approval gates live in [`../workflow.md`](../workflow.md) — the
+single source of truth that `ba.next` / `next-step.sh` and every skill's **Next steps** block
+are derived from.
+
+## Knowledge base & lightweight RLM
+
+Each project and task carries a `kb/index.md` (`## Summary` + `## Entries`). Activity skills
+ground their work by reading the project index first, then the task index (task precedence),
+and for large inputs recurse into only the relevant entries in focused passes (lightweight
+Recursive-Language-Model strategy), degrading to a single pass for small inputs. A missing or
+empty `kb/` never causes failure. See the contract's §"KB-aware grounding".
 
 ## How to add a new skill (no core edits required)
 
