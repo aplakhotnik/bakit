@@ -2,11 +2,13 @@
 # BA-Kit: suggest the next workflow step for the active (or named) task.
 #
 # Usage:
-#   next-step.sh [<project>] [<task>]
+#   next-step.sh [--workflow <manifest>] [<project>] [<task>]
 #
-# Reads the ordered chain from bakit/workflow.md and the current workspace state,
-# then prints the next runnable skill and any unmet approval gate. It never
-# modifies anything. A missing workflow.md or task is reported, not fatal-crashed.
+# Reads the ordered chain from a workflow manifest (default bakit/workflow.md; pass
+# --workflow <relative-manifest> to read an alternate manifest such as
+# workflow-discovery.md, resolved relative to BAKIT_HOME) and the current workspace
+# state, then prints the next runnable skill and any unmet approval gate. It never
+# modifies anything. A missing manifest or task is reported, not fatal-crashed.
 #
 # Exit codes:
 #   0  a suggestion (next step, gate, or "complete") was printed
@@ -18,7 +20,22 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
 
 CHECK="$SCRIPT_DIR/check-artifact.sh"
-WORKFLOW="$BAKIT_HOME/workflow.md"
+
+# Parse options. --workflow selects an alternate manifest (relative to BAKIT_HOME);
+# remaining positional args are [<project>] [<task>], preserving existing behavior.
+WORKFLOW_REL="workflow.md"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --workflow) [ $# -ge 2 ] || bakit_die "--workflow requires a manifest path"; WORKFLOW_REL="$2"; shift 2 ;;
+    --workflow=*) WORKFLOW_REL="${1#--workflow=}"; shift ;;
+    -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --) shift; break ;;
+    -*) bakit_die "unknown option: $1" ;;
+    *) break ;;
+  esac
+done
+
+WORKFLOW="$BAKIT_HOME/$WORKFLOW_REL"
 
 # Capture a check-artifact.sh exit code without tripping `set -e`.
 check_ec() { _ec=0; sh "$CHECK" "$@" >/dev/null 2>&1 || _ec=$?; printf '%s' "$_ec"; }

@@ -26,10 +26,19 @@ you invoke the helper on their behalf. Follow `memory/ba-constitution.md` and
    This creates `workspace/<slug>/project.md`, an empty `tasks/` folder, and a shared
    project-level knowledge base at `kb/index.md`. It is collision-safe: if the project exists,
    report that and stop rather than overwriting.
-3. **Surface the result.** Show the analyst the created paths (project root, `project.md`,
-   `kb/index.md`) so they know where work lives. Offer to help fill in `project.md`
-   (Overview / Goals / Stakeholders) and to seed shared knowledge into `kb/`.
-4. **Point the way forward** with the Next steps block below.
+3. **Elicit project context.** Ask the analyst a short, bounded set of questions to capture
+   durable, project-wide context that downstream skills (e.g. `ba.specify`) will consult instead
+   of re-asking: business goals/outcomes, key stakeholders/roles, domain terms, known constraints
+   (regulatory, technical, timeline), and any house style or conventions. Keep it light — this is
+   optional and non-blocking: if the analyst skips or defers, continue without error.
+   - Persist the answers into the **project-level** knowledge base: write a `kb/context.md` entry
+     and reference it from `kb/index.md` (under `## Entries`) so it is discoverable. Record
+     anything uncertain as an assumption rather than fact.
+4. **Surface the result.** Show the analyst the created paths (project root, `project.md`,
+   `kb/index.md`, and `kb/context.md` if written) so they know where work lives. Offer to help
+   fill in `project.md` (Overview / Goals / Stakeholders) and to seed further shared knowledge
+   into `kb/`.
+5. **Point the way forward** with the Next steps block below.
 
 ## Next steps
 
@@ -38,5 +47,5 @@ Derived from `workflow.md`. A project needs at least one task before analysis ca
 ```text
 ## Next steps
 - ▶ ba.start-task   — create the first task to hold inputs and artifacts
-- ✎ (optional) flesh out project.md and add shared context to kb/index.md
+- ✎ (optional) flesh out project.md and add shared context to kb/index.md (and kb/context.md)
 ```

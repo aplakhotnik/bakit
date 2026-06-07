@@ -55,5 +55,46 @@ printf '%s\n' '{' '  "editor.tabSize": 2,' '  "chat.promptFiles": true' '}' > "$
 grep -q '"editor.tabSize"' "$SETTINGS" 2>/dev/null \
   && ok "existing settings.json preserved on re-run" || no "existing settings.json preserved on re-run"
 
+# --- Claude target (US1) ---------------------------------------------------
+# Scope: this verifies skill placement, naming, and idempotency for the Claude
+# target. Actual in-Claude invocation is verified manually per quickstart S1.
+
+# `--agent claude` maps all ba.* skills into .claude/commands as plain *.md.
+CWORK="$TMP/claude-explicit"
+mkdir -p "$CWORK"
+( cd "$CWORK" && sh "$CLONE/install.sh" --agent claude >/dev/null 2>&1 ) \
+  && ok "claude installer runs cleanly" || no "claude installer runs cleanly"
+CDEST="$CWORK/.claude/commands"
+[ -d "$CDEST" ] && ok "claude: .claude/commands/ created when absent" || no "claude: .claude/commands/ created when absent"
+cmapped=1
+for s in ba.specify-requirements ba.analyze-docs ba.write-stories ba.render-confluence \
+         ba.start-project ba.start-task ba.next; do
+  [ -f "$CDEST/$s.md" ] || cmapped=0
+done
+[ "$cmapped" -eq 1 ] && ok "claude: all skills mapped with plain .md extension" || no "claude: all skills mapped with plain .md extension"
+# Claude must NOT receive the VS Code '.prompt.md' naming.
+[ ! -f "$CDEST/ba.next.prompt.md" ] && ok "claude: no .prompt.md naming" || no "claude: no .prompt.md naming"
+# Internal templates are not mapped for Claude either.
+[ ! -f "$CDEST/_skill-template.md" ] && ok "claude: internal templates not mapped" || no "claude: internal templates not mapped"
+# Claude install does NOT create VS Code workspace settings.
+[ ! -f "$CWORK/.vscode/settings.json" ] && ok "claude: no .vscode/settings.json" || no "claude: no .vscode/settings.json"
+# Re-running the Claude install is idempotent (still succeeds, skills present).
+( cd "$CWORK" && sh "$CLONE/install.sh" --agent claude >/dev/null 2>&1 ) \
+  && [ -f "$CDEST/ba.next.md" ] && ok "claude: re-run idempotent" || no "claude: re-run idempotent"
+
+# Auto-detect: only .claude/ present (no --agent) selects the Claude target.
+CAUTO="$TMP/claude-auto"
+mkdir -p "$CAUTO/.claude"
+( cd "$CAUTO" && sh "$CLONE/install.sh" >/dev/null 2>&1 )
+[ -f "$CAUTO/.claude/commands/ba.next.md" ] && ok "auto-detect: lone .claude/ -> claude" || no "auto-detect: lone .claude/ -> claude"
+
+# Mixed-agent precedence: both .github/ and .claude/ present, no --agent,
+# resolves to Copilot (.github/prompts) and leaves .claude/ untouched.
+CMIX="$TMP/claude-mixed"
+mkdir -p "$CMIX/.github" "$CMIX/.claude"
+( cd "$CMIX" && sh "$CLONE/install.sh" >/dev/null 2>&1 )
+[ -f "$CMIX/.github/prompts/ba.next.prompt.md" ] && ok "mixed-agent: precedence selects copilot" || no "mixed-agent: precedence selects copilot"
+[ ! -f "$CMIX/.claude/commands/ba.next.md" ] && ok "mixed-agent: .claude left untouched" || no "mixed-agent: .claude left untouched"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

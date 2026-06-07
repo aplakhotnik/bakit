@@ -79,5 +79,46 @@ mkart "$TASK2/artifacts/requirements.md" requirements approved
 nextout "Demo" "002-skip-analyze" | grep -q 'Next: ba.write-stories' \
   && ok "skip analyze: approved -> write-stories" || no "skip analyze: approved -> write-stories"
 
+# --- Discovery workflow via --workflow workflow-discovery.md (additive) ---
+
+# Drive a fresh task through the separate Discovery manifest.
+sh "$SCRIPTS/init-task.sh" "Demo" "Discovery Run" >/dev/null 2>&1
+TASK3="$BAKIT_WORKSPACE/demo/tasks/003-discovery-run"
+dnext() { sh "$SCRIPTS/next-step.sh" --workflow workflow-discovery.md "$@" 2>/dev/null; }
+
+# D1. Fresh task on the discovery manifest -> first state is ba.discover.initiate.
+dnext "Demo" "003-discovery-run" | grep -q 'ba.discover.initiate' \
+  && ok "discovery: fresh task -> initiate" || no "discovery: fresh task -> initiate"
+
+# D2. Default manifest is unaffected for the same fresh task (still analyze-docs).
+nextout "Demo" "003-discovery-run" | grep -q 'ba.analyze-docs' \
+  && ok "discovery: default manifest still analyze-docs (no regression)" || no "discovery: default manifest still analyze-docs (no regression)"
+
+# D3. Draft charter present -> gap-analysis gate not met.
+mkart "$TASK3/artifacts/project-charter.md" project-charter draft
+out3=$(dnext "Demo" "003-discovery-run")
+printf '%s' "$out3" | grep -qi 'gate not met' && ok "discovery: draft charter -> gate not met" || no "discovery: draft charter -> gate not met"
+printf '%s' "$out3" | grep -q 'ba.discover.gap-analysis' && ok "discovery: gate names gap-analysis" || no "discovery: gate names gap-analysis"
+
+# D4. Approve charter -> next is gap-analysis.
+mkart "$TASK3/artifacts/project-charter.md" project-charter approved
+dnext "Demo" "003-discovery-run" | grep -q 'Next: ba.discover.gap-analysis' \
+  && ok "discovery: approved charter -> gap-analysis" || no "discovery: approved charter -> gap-analysis"
+
+# D5. Add approved gap-analysis -> next is backlog.
+mkart "$TASK3/artifacts/gap-analysis.md" gap-analysis approved "derived_from: [test-project-charter]"
+dnext "Demo" "003-discovery-run" | grep -q 'Next: ba.discover.backlog' \
+  && ok "discovery: approved gap-analysis -> backlog" || no "discovery: approved gap-analysis -> backlog"
+
+# D6. Add approved backlog -> next is estimate.
+mkart "$TASK3/artifacts/product-backlog.md" product-backlog approved "derived_from: [test-gap-analysis]"
+dnext "Demo" "003-discovery-run" | grep -q 'Next: ba.discover.estimate' \
+  && ok "discovery: approved backlog -> estimate" || no "discovery: approved backlog -> estimate"
+
+# D7. Add estimated-backlog -> all discovery states produced output.
+mkart "$TASK3/artifacts/estimated-backlog.md" estimated-backlog draft "derived_from: [test-product-backlog]"
+dnext "Demo" "003-discovery-run" | grep -qi 'produced output' \
+  && ok "discovery: all states done -> complete" || no "discovery: all states done -> complete"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

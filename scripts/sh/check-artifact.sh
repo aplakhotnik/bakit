@@ -66,7 +66,9 @@ require_field() {
 case "$TYPE" in
   docs-analysis)             require_field sources ;;
   user-stories|confluence-page) require_field derived_from ;;
-  requirements|project)      : ;;
+  requirements|elicitation-plan|project) : ;;
+  discovery-document|project-charter) : ;;
+  gap-analysis|product-backlog|estimated-backlog) require_field derived_from ;;
   *) bakit_warn "unknown artifact type '$TYPE' (continuing): $FILE" ;;
 esac
 

@@ -21,10 +21,38 @@ shell scripts by hand:
 
 | Skill | Produces | Prerequisite |
 |-------|----------|--------------|
+| `ba.specify` | `artifacts/requirements.md` + `artifacts/elicitation-plan.md` | none |
 | `ba.specify-requirements` | `artifacts/requirements.md` | none |
 | `ba.analyze-docs` | `artifacts/docs-analysis.md` | none |
 | `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
 | `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
+
+### Discovery activities (consultative BA/PO state machine)
+
+A separate, additive workflow that turns a plain idea into an estimated, road-mapped backlog
+while persisting a Living Discovery Document. Each step is phase-gated on the prior artifact's
+approval. Declared in [`../workflow-discovery.md`](../workflow-discovery.md) — it coexists with
+the default chain and never auto-triggers it.
+
+| Skill | Produces | Prerequisite |
+|-------|----------|--------------|
+| `ba.discover.initiate` | `artifacts/project-charter.md` (+ living `discovery-document.md`) | none |
+| `ba.discover.gap-analysis` | `artifacts/gap-analysis.md` | approved `project-charter.md` |
+| `ba.discover.backlog` | `artifacts/product-backlog.md` | approved `gap-analysis.md` |
+| `ba.discover.estimate` | `artifacts/estimated-backlog.md` | approved `product-backlog.md` |
+| `ba.discover.next` | resolves the next discovery step + cross-state staleness check | a task |
+
+> **Run the discovery chain** by pointing the next-step helper at its manifest:
+> `next-step.sh --workflow workflow-discovery.md` (PowerShell: `-Workflow workflow-discovery.md`),
+> or just invoke `ba.discover.next`, which does this for you.
+
+> **`ba.specify` vs. `ba.specify-requirements`.** Both produce the same `requirements.md`, and
+> they coexist. Use **`ba.specify`** when starting from a plain-language *need*: it runs an
+> iterative, KB-grounded "deep research" clarification loop (persisted in a living
+> `elicitation-plan.md`) and validates the draft against a quality checklist before presenting
+> it. Use the lighter **`ba.specify-requirements`** for the quick "raw notes/inputs →
+> requirements list" case. Because they share `requirements.md`, each confirms before
+> overwriting an existing draft or approved spec.
 
 The ordered chain and per-step approval gates live in [`../workflow.md`](../workflow.md) — the
 single source of truth that `ba.next` / `next-step.sh` and every skill's **Next steps** block
