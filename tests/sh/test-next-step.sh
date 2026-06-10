@@ -42,9 +42,9 @@ TASK="$BAKIT_WORKSPACE/demo/tasks/001-build"
 # 1. Fresh task -> first step is ba.analyze-docs.
 nextout | grep -q 'ba.analyze-docs' && ok "fresh task -> analyze-docs" || no "fresh task -> analyze-docs"
 
-# 2. With docs-analysis present -> next is specify-requirements.
+# 2. With docs-analysis present -> next is specify.
 mkart "$TASK/artifacts/docs-analysis.md" docs-analysis draft "sources: [inputs/a.txt]"
-nextout | grep -q 'ba.specify-requirements' && ok "docs-analysis done -> specify-requirements" || no "docs-analysis done -> specify-requirements"
+nextout | grep -q 'ba.specify' && ok "docs-analysis done -> specify" || no "docs-analysis done -> specify"
 
 # 3. With requirements present but draft -> write-stories gate not met.
 mkart "$TASK/artifacts/requirements.md" requirements draft

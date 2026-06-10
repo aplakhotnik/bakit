@@ -1,29 +1,31 @@
 ---
 name: "ba.specify"
-summary: "Turn a plain-language need into a rigorous, review-ready specification via an iterative, KB-grounded elicitation loop"
-inputs: "The analyst's plain-language description of a need; the project + task knowledge base; project context captured at initiation; optionally raw material in inputs/"
+summary: "Turn a plain-language need or raw notes into a structured, review-ready requirements specification — a deep elicitation mode (default) and a lightweight quick mode"
+inputs: "The analyst's plain-language description of a need and/or raw material in inputs/; the project + task knowledge base; project context captured at initiation"
 prerequisites: "none (does NOT require a pre-existing BRD/FRD)"
-output: "type: requirements -> artifacts/requirements.md (the specification) AND type: elicitation-plan -> artifacts/elicitation-plan.md (the living plan)"
+output: "type: requirements -> artifacts/requirements.md (the specification); in deep mode also type: elicitation-plan -> artifacts/elicitation-plan.md (the living plan)"
 template: "templates/artifacts/requirements.md and templates/artifacts/elicitation-plan.md"
 ---
 
 # Skill: `ba.specify`
 
-The **robust, front-door elicitation skill** — the BA analogue of `speckit.specify`. It starts
-from a stakeholder's plain-language *need* (no pre-existing BRD/FRD required), grounds the work in
-the knowledge base and project context, runs an **iterative, multi-round "deep research"
-clarification loop** (persisted in a living elicitation plan), validates the result against a
-quality checklist, and presents a `draft` specification for human approval.
+The **front-door requirements skill** — the BA analogue of `speckit.specify`. It starts from a
+stakeholder's plain-language *need* or raw notes (no pre-existing BRD/FRD required), grounds the
+work in the knowledge base and project context, and produces a `draft` requirements specification
+for human approval. It offers **two modes**:
 
-Authored as agent-agnostic plain Markdown with the framework's standard front-matter — no
-agent-proprietary features. Follow `memory/ba-constitution.md`,
+- **Deep mode (default)** — runs an **iterative, multi-round "deep research" clarification loop**
+  (persisted in a living elicitation plan) and validates the result against a quality checklist.
+  Use it when starting from a described *need* and you want rigorous, multi-round elicitation.
+- **Quick mode** — the lightweight "raw notes/inputs → structured requirements list" path: a
+  single clarification pass, no living elicitation plan. Use it when the inputs are already clear
+  and you just need them captured as a structured, testable requirements artifact.
+
+Both modes write the same `artifacts/requirements.md`, so either entry point slots into the
+workflow chain. Authored as agent-agnostic plain Markdown with the framework's standard
+front-matter — no agent-proprietary features. Follow `memory/ba-constitution.md`,
 `specs/001-ba-kit-framework/contracts/skill-contract.md`, and
 `specs/002-specify-skill/contracts/ba-specify.md`.
-
-> **Coexistence.** `ba.specify` does **not** replace `ba.specify-requirements`. The lightweight
-> "raw notes/inputs → requirements list" path remains available via `ba.specify-requirements`;
-> use `ba.specify` when you are starting from a described *need* and want rigorous, multi-round
-> elicitation. Both skills write the same `artifacts/requirements.md`.
 
 ## Steps
 
@@ -33,7 +35,8 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
    `artifacts/elicitation-plan.md`.
 
 2. **Intake the need.** Take the analyst's plain-language description of the need (a sentence to a
-   few paragraphs). You MUST NOT require a pre-existing requirements document (BRD/FRD).
+   few paragraphs) and/or the raw material in the task's `inputs/`. You MUST NOT require a
+   pre-existing requirements document (BRD/FRD).
    - **Empty input:** if no description was given AND there is no usable content in the task's
      `kb/` or `inputs/`, ask the analyst for a description rather than fabricating a specification.
    - **Formal-requirements input:** if `inputs/` already contains a pasted BRD/FRD (content that
@@ -41,7 +44,18 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
      instead of duplicating documentation analysis — then continue only with the genuinely
      net-new need, if any.
 
-3. **Ground in the knowledge base and project context FIRST.** Before drafting, consult curated
+3. **Choose the mode.** Decide how much elicitation the input warrants and confirm with the
+   analyst:
+   - Use **quick mode** when the analyst asks for it, or when the inputs/notes are already clear
+     enough to capture directly as a structured requirements list. Quick mode runs a **single**
+     clarification pass and does **not** create an elicitation plan — skip step 5 and go straight
+     to drafting (step 6) after one round of targeted questions.
+   - Use **deep mode** (the default) when starting from an open-ended *need*, or when the inputs
+     are ambiguous, conflicting, or incomplete. Deep mode runs the iterative loop in step 5.
+   - When unsure, prefer deep mode; you may also start in quick mode and escalate to deep mode if
+     material ambiguities surface while drafting.
+
+4. **Ground in the knowledge base and project context FIRST.** Before drafting, consult curated
    context so you reuse known facts instead of re-asking:
    - Read the **project-level** `kb/index.md`, then the active task's `kb/index.md` (task
      knowledge takes precedence). Use the `## Summary`/`## Entries` to decide what is relevant;
@@ -53,8 +67,10 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
      absence as an assumption.
    - Cite grounded content inline where you use it: `<!-- source: kb/<entry> -->`.
 
-4. **Run the iterative elicitation loop (deep research).** Repeat the following as multiple
-   rounds until the analyst signals common understanding (or explicitly defers the rest):
+5. **Run the iterative elicitation loop (deep mode only — deep research).** In quick mode, skip
+   this step (you already ran a single clarification pass in step 3) and go to step 6. In deep
+   mode, repeat the following as multiple rounds until the analyst signals common understanding
+   (or explicitly defers the rest):
    1. **Detect & question.** Identify ambiguities, gaps, and conflicts. Raise a **bounded**
       (default ≤3 per round), **prioritized** (scope before detail) set of clarification
       questions, each with **options and the implication of each option**. Never silently guess on
@@ -70,7 +86,7 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
    4. **Check convergence.** Ask the analyst whether understanding is complete. If not, run
       another round. If yes (or they defer remaining items), proceed to draft the specification.
 
-5. **Draft the specification.** Derive a concise, human-readable `title` for the need, then
+6. **Draft the specification.** Derive a concise, human-readable `title` for the need, then
    populate `templates/artifacts/requirements.md` **as the existing `type: requirements` artifact
    (reused unchanged)** so it slots into the workflow chain:
    - Prioritized, independently testable **user scenarios**.
@@ -83,14 +99,13 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
    - Populate `assumptions` (also reflected in the Assumptions section); never present an
      assumption as fact.
 
-6. **Guard existing output (non-destructive).** Before writing `requirements.md`:
+7. **Guard existing output (non-destructive).** Before writing `requirements.md`:
    - If an **approved** `requirements.md` already exists, do NOT overwrite it without explicit
      analyst confirmation.
-   - Because `ba.specify` and `ba.specify-requirements` share this output, if a **draft**
-     `requirements.md` already exists (from either skill), confirm before replacing it, noting
-     which skill last wrote it.
+   - If a **draft** `requirements.md` already exists, confirm before replacing it (note when it
+     was last written and in which mode).
 
-7. **Validate against the quality checklist.** After drafting, self-validate and iterate within a
+8. **Validate against the quality checklist.** After drafting, self-validate and iterate within a
    bounded number of passes (default ≤3):
    - Each functional requirement is **testable and unambiguous**.
    - Each success criterion is **measurable and free of implementation/technology detail**.
@@ -100,24 +115,25 @@ agent-proprietary features. Follow `memory/ba-constitution.md`,
      fully pass within the pass limit, record the remaining issues and **warn** the analyst rather
      than presenting the spec as complete.
 
-8. **Capture reusable knowledge.** If durable, reusable knowledge emerged (agreed terms,
+9. **Capture reusable knowledge.** If durable, reusable knowledge emerged (agreed terms,
    decisions, constraints), add or update the relevant `kb/` entry and reflect it in that
    `kb/index.md` (task-level for task-specific facts, project-level for shared ones).
 
-9. **Present for review.** Show both artifacts as editable proposals. Do NOT set `status:
-   approved` — that is the analyst's decision. Once `requirements.md` is approved it becomes the
-   source of truth for `ba.write-stories`.
+10. **Present for review.** Show the artifact(s) as editable proposals — `requirements.md` always,
+    plus `elicitation-plan.md` in deep mode. Do NOT set `status: approved` — that is the analyst's
+    decision. Once `requirements.md` is approved it becomes the source of truth for
+    `ba.write-stories`.
 
 ## Validation
 
-After a converged run, both artifacts must pass:
+After a run, the requirements artifact must pass (and, in deep mode, the elicitation plan too):
 
 ```sh
 scripts/sh/check-artifact.sh <task>/artifacts/requirements.md
-scripts/sh/check-artifact.sh <task>/artifacts/elicitation-plan.md
+scripts/sh/check-artifact.sh <task>/artifacts/elicitation-plan.md   # deep mode only
 ```
 
-Both MUST exit 0. The specification MUST additionally satisfy the quality checklist from step 7
+Each MUST exit 0. The specification MUST additionally satisfy the quality checklist from step 8
 (no untestable requirement or non-measurable success criterion presented as final).
 
 ## Next steps

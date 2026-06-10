@@ -43,9 +43,9 @@ try {
     # 1. Fresh task -> first step is ba.analyze-docs.
     if ((Next-Out) -match 'ba\.analyze-docs') { Ok 'fresh task -> analyze-docs' } else { No 'fresh task -> analyze-docs' }
 
-    # 2. With docs-analysis present -> next is specify-requirements.
+    # 2. With docs-analysis present -> next is specify.
     Mk-Art (Join-Path $TASK 'artifacts/docs-analysis.md') 'docs-analysis' 'draft' 'sources: [inputs/a.txt]'
-    if ((Next-Out) -match 'ba\.specify-requirements') { Ok 'docs-analysis done -> specify-requirements' } else { No 'docs-analysis done -> specify-requirements' }
+    if ((Next-Out) -match 'ba\.specify') { Ok 'docs-analysis done -> specify' } else { No 'docs-analysis done -> specify' }
 
     # 3. With requirements present but draft -> write-stories gate not met.
     Mk-Art (Join-Path $TASK 'artifacts/requirements.md') 'requirements' 'draft'

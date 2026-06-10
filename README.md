@@ -16,9 +16,10 @@ scaffolds a standardized workspace for you and guides you skill-by-skill through
 - **Helper scripts** (POSIX shell) — scaffold projects/tasks, list artifacts, validate status,
   resolve the next workflow step. Skills invoke these on your behalf.
 - **Agent-agnostic BA skills** — guided workflows that produce structured Markdown artifacts:
-  - `ba.specify` — a described *need* → rigorous specification, via an iterative, KB-grounded
-    clarification loop (persisted in a living `elicitation-plan.md`) with a validation gate
-  - `ba.specify-requirements` — raw inputs → structured requirements (lightweight path)
+  - `ba.specify` — a described *need* or raw notes → structured requirements. **Deep mode**
+    (default) runs an iterative, KB-grounded clarification loop (persisted in a living
+    `elicitation-plan.md`) with a validation gate; **quick mode** captures clear inputs in a
+    single pass.
   - `ba.analyze-docs` — existing documents → extracted requirements, gaps, open questions
   - `ba.write-stories` — approved requirements → user stories with acceptance criteria
   - `ba.render-confluence` — approved artifact → local Confluence-ready Markdown
@@ -59,7 +60,7 @@ ba.start-project   # "Start a project called payments-revamp"
 ba.start-task      # "Add a task: elicit-requirements"
 #   → drop notes/docs into the task's inputs/ folder
 ba.next            # asks the workflow what to run next, then you click the suggestion
-#   → e.g. ba.analyze-docs / ba.specify-requirements → ba.write-stories → ba.render-confluence
+#   → e.g. ba.analyze-docs / ba.specify → ba.write-stories → ba.render-confluence
 ```
 
 Prefer scripts? The same scaffolding is available directly:
@@ -135,7 +136,7 @@ installer prints manual instructions instead of guessing.
 `workflow.md` declares the ordered chain and each step's approval gate:
 
 ```text
-ba.analyze-docs → ba.specify-requirements → ba.write-stories → ba.render-confluence
+ba.analyze-docs → ba.specify → ba.write-stories → ba.render-confluence
 ```
 
 `next-step.sh` (and the `ba.next` skill) read this manifest plus the current artifacts to tell

@@ -39,6 +39,6 @@ Derived from `workflow.md`. The first workflow step depends on what the analyst 
 ```text
 ## Next steps
 - ▶ ba.analyze-docs        — if there are existing documents in inputs/ to analyze
-- ▶ ba.specify-requirements — to capture requirements from notes/conversation
+- ▶ ba.specify             — to capture requirements from a need or notes/conversation
 - ▶ ba.next                — ask anytime for the recommended next step
 ```

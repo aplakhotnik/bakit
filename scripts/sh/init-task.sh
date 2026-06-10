@@ -35,7 +35,7 @@ cat > "$TASK_DIR/inputs/README.md" <<EOF
 # Inputs for task $TASK_NAME
 
 Place raw source material here (notes, documents, transcripts) as text-based files.
-Skills such as \`ba.specify-requirements\` and \`ba.analyze-docs\` read from this folder.
+Skills such as \`ba.specify\` and \`ba.analyze-docs\` read from this folder.
 EOF
 
 # Seed the task-level knowledge base index from the template.

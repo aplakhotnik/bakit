@@ -21,8 +21,7 @@ shell scripts by hand:
 
 | Skill | Produces | Prerequisite |
 |-------|----------|--------------|
-| `ba.specify` | `artifacts/requirements.md` + `artifacts/elicitation-plan.md` | none |
-| `ba.specify-requirements` | `artifacts/requirements.md` | none |
+| `ba.specify` | `artifacts/requirements.md` (+ `artifacts/elicitation-plan.md` in deep mode) | none |
 | `ba.analyze-docs` | `artifacts/docs-analysis.md` | none |
 | `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
 | `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
@@ -46,13 +45,12 @@ the default chain and never auto-triggers it.
 > `next-step.sh --workflow workflow-discovery.md` (PowerShell: `-Workflow workflow-discovery.md`),
 > or just invoke `ba.discover.next`, which does this for you.
 
-> **`ba.specify` vs. `ba.specify-requirements`.** Both produce the same `requirements.md`, and
-> they coexist. Use **`ba.specify`** when starting from a plain-language *need*: it runs an
-> iterative, KB-grounded "deep research" clarification loop (persisted in a living
-> `elicitation-plan.md`) and validates the draft against a quality checklist before presenting
-> it. Use the lighter **`ba.specify-requirements`** for the quick "raw notes/inputs →
-> requirements list" case. Because they share `requirements.md`, each confirms before
-> overwriting an existing draft or approved spec.
+> **`ba.specify` modes.** `ba.specify` is the single front door to `requirements.md`. Use
+> **deep mode** (default) when starting from a plain-language *need*: it runs an iterative,
+> KB-grounded "deep research" clarification loop (persisted in a living `elicitation-plan.md`)
+> and validates the draft against a quality checklist before presenting it. Use **quick mode**
+> for the lighter "raw notes/inputs → requirements list" case: a single clarification pass with no
+> elicitation plan. Either mode confirms before overwriting an existing draft or approved spec.
 
 The ordered chain and per-step approval gates live in [`../workflow.md`](../workflow.md) — the
 single source of truth that `ba.next` / `next-step.sh` and every skill's **Next steps** block
@@ -89,7 +87,7 @@ SC-004).
 
 These skills avoid agent-proprietary features and rely only on plain prompt instructions plus
 the shell helpers, so they run consistently across agents (e.g., Copilot, Claude, Cursor). To
-spot-check: run `ba.specify-requirements` on the same inputs in a second agent and confirm the
+spot-check: run `ba.specify` on the same inputs in a second agent and confirm the
 produced `requirements.md` conforms to the same template and passes `check-artifact.sh`.
 
 <!-- Record cross-agent validation results here as you verify them. -->

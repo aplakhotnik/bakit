@@ -58,6 +58,6 @@ Derived from `workflow.md`. After presenting the draft, surface this block (run
 
 ```text
 ## Next steps
-- ▶ ba.specify-requirements — turn these findings into a structured requirements artifact
+- ▶ ba.specify — turn these findings into a structured requirements artifact
 - ✎ Review and (optionally) approve docs-analysis.md so it can ground later steps
 ```

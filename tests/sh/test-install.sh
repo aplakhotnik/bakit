@@ -34,7 +34,7 @@ DEST="$WORKDIR/.github/prompts"
 # All skills mapped into the destination (existing + new agent-driven ones).
 # A .github/prompts destination uses the VS Code '.prompt.md' extension.
 mapped=1
-for s in ba.specify-requirements ba.analyze-docs ba.write-stories ba.render-confluence \
+for s in ba.specify ba.analyze-docs ba.write-stories ba.render-confluence \
          ba.start-project ba.start-task ba.next; do
   [ -f "$DEST/$s.prompt.md" ] || mapped=0
 done
@@ -67,7 +67,7 @@ mkdir -p "$CWORK"
 CDEST="$CWORK/.claude/commands"
 [ -d "$CDEST" ] && ok "claude: .claude/commands/ created when absent" || no "claude: .claude/commands/ created when absent"
 cmapped=1
-for s in ba.specify-requirements ba.analyze-docs ba.write-stories ba.render-confluence \
+for s in ba.specify ba.analyze-docs ba.write-stories ba.render-confluence \
          ba.start-project ba.start-task ba.next; do
   [ -f "$CDEST/$s.md" ] || cmapped=0
 done

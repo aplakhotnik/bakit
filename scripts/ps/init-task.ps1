@@ -43,7 +43,7 @@ $readmeTemplate = @'
 # Inputs for task {0}
 
 Place raw source material here (notes, documents, transcripts) as text-based files.
-Skills such as `ba.specify-requirements` and `ba.analyze-docs` read from this folder.
+Skills such as `ba.specify` and `ba.analyze-docs` read from this folder.
 '@
 $readme = ($readmeTemplate -f $TaskName) + "`n"
 Bakit-WriteText (Join-Path (Join-Path $TaskDir 'inputs') 'README.md') $readme

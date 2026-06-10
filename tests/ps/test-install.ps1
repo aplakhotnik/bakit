@@ -29,7 +29,7 @@ function Run-Install {
 }
 
 $skills = @(
-    'ba.specify-requirements', 'ba.analyze-docs', 'ba.write-stories', 'ba.render-confluence',
+    'ba.specify', 'ba.analyze-docs', 'ba.write-stories', 'ba.render-confluence',
     'ba.start-project', 'ba.start-task', 'ba.next'
 )
 
