@@ -120,5 +120,37 @@ mkart "$TASK3/artifacts/estimated-backlog.md" estimated-backlog draft "derived_f
 dnext "Demo" "003-discovery-run" | grep -qi 'produced output' \
   && ok "discovery: all states done -> complete" || no "discovery: all states done -> complete"
 
+# --- 007: advisory blocking-gap warning before a dependent step ---
+
+# B1. Approved requirements with a blocking open question -> warn AND still suggest write-stories.
+sh "$SCRIPTS/init-task.sh" "Demo" "Gap Aware" >/dev/null 2>&1
+TASK4="$BAKIT_WORKSPACE/demo/tasks/004-gap-aware"
+mkart "$TASK4/artifacts/requirements.md" requirements approved "open_questions: 1
+blocking_questions: 1"
+out4=$(nextout "Demo" "004-gap-aware")
+printf '%s' "$out4" | grep -q 'Next: ba.write-stories' \
+  && ok "blocking-gap: still suggests write-stories" || no "blocking-gap: still suggests write-stories"
+printf '%s' "$out4" | grep -qi 'blocking' \
+  && ok "blocking-gap: advisory warning shown" || no "blocking-gap: advisory warning shown"
+# Exit code stays 0 (advisory, never a hard block).
+_ec=0; sh "$SCRIPTS/next-step.sh" "Demo" "004-gap-aware" >/dev/null 2>&1 || _ec=$?
+[ "$_ec" = "0" ] && ok "blocking-gap: exit 0 (advisory)" || no "blocking-gap: exit 0 (advisory)"
+
+# B2. Approved requirements with NO blocking questions -> no warning (unchanged behavior).
+mkart "$TASK4/artifacts/requirements.md" requirements approved "open_questions: 1
+blocking_questions: 0"
+out5=$(nextout "Demo" "004-gap-aware")
+printf '%s' "$out5" | grep -q 'Next: ba.write-stories' \
+  && ok "no-blocking: suggests write-stories" || no "no-blocking: suggests write-stories"
+printf '%s' "$out5" | grep -qi 'blocking' \
+  && no "no-blocking: should NOT warn about blocking" || ok "no-blocking: no blocking warning"
+
+# B3. Draft requirements with a blocking question -> existing approval gate still shown first.
+mkart "$TASK4/artifacts/requirements.md" requirements draft "open_questions: 1
+blocking_questions: 1"
+out6=$(nextout "Demo" "004-gap-aware")
+printf '%s' "$out6" | grep -qi 'gate not met' \
+  && ok "draft+blocking: approval gate shown (unchanged)" || no "draft+blocking: approval gate shown (unchanged)"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

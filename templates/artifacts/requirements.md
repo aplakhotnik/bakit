@@ -7,6 +7,8 @@ created: ""
 updated: ""
 sources: []
 assumptions: []
+open_questions: 0
+blocking_questions: 0
 ---
 
 # Requirements: {{TITLE}}
@@ -32,9 +34,34 @@ assumptions: []
 
 ## Open Questions
 
-<!-- Targeted clarification questions raised for ambiguous/incomplete input. -->
+<!--
+  Targeted clarification questions for ambiguous/incomplete input, in a structured, parseable table.
+  Keep the front-matter rollup in sync: `open_questions` = rows with Status `open`;
+  `blocking_questions` = `open` rows with Blocking `true`.
+  - ID — stable, unique within this artifact (e.g. OQ-001).
+  - Status — open | resolved | deferred (blank ⇒ open).
+  - Blocking — true | false (blank ⇒ false).
+  - Origin — source ref, or a trace ref to a carried-forward item (e.g. `docs-analysis:OQ-002`).
+  - Resolution — REQUIRED (non "—") when Status is resolved/deferred: the answer/decision + rationale
+    (for deferred, the defer reason). Leave "—" while open.
+-->
 
-- …
+| ID | Question | Status | Blocking | Origin | Resolution |
+|----|----------|--------|----------|--------|------------|
+| OQ-001 | … | open | false | inputs/<file> § <section> | — |
+
+## Override Log
+
+<!--
+  Append-only audit trail (007). Records when the analyst consciously proceeded past an advisory
+  blocking-gap warning AND no elicitation-plan.md exists to hold the override (e.g. quick mode).
+  When an elicitation plan exists, the override is recorded in its Round Log instead.
+  One row per override: the step proceeded into, the blocking question id(s) overridden, and when.
+-->
+
+| Step | Overridden question ids | Timestamp | Note |
+|------|-------------------------|-----------|------|
+| — | — | — | — |
 
 ## Assumptions
 

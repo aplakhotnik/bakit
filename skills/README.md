@@ -62,6 +62,14 @@ The ordered chain and per-step approval gates live in [`../workflow.md`](../work
 single source of truth that `ba.next` / `next-step.sh` and every skill's **Next steps** block
 are derived from.
 
+> **Gap-aware advisories (non-blocking).** Artifacts can carry an `open_questions` /
+> `blocking_questions` rollup (backed by a structured `## Open Questions` table). `ba.specify`
+> uses it to show a **decomposition-readiness summary**; `ba.next` / `next-step.sh` emit an
+> **advisory warning** when an approved prerequisite still has blocking questions, letting the
+> analyst resolve them first or **proceed anyway** (which records an Override). Open questions
+> from `ba.analyze-docs` are **carried forward** into `ba.specify`. These advisories never
+> auto-approve, silently escalate, or change the approval gates — the analyst always decides.
+
 ## Knowledge base & lightweight RLM
 
 Each project and task carries a `kb/index.md` (`## Summary` + `## Entries`). Activity skills

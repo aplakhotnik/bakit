@@ -40,3 +40,24 @@ exactly what to do next as a click-ready suggestion. Follow
 4. **Stay advisory.** Never run a downstream skill automatically — present the option and let
    the analyst choose. If the knowledge base is empty or `workflow.md` is missing, say so plainly
    and suggest the most sensible manual next step instead of failing.
+5. **Surface blocking open questions (advisory).** When the resolver prints a blocking-gap warning
+   (the approved prerequisite still carries unresolved `blocking_questions`), relay it to the
+   analyst — name the artifact, the count, and point to its `## Open Questions` table. Then offer
+   two clearly-labelled paths and let the analyst pick:
+   - **Resolve first** — go back to the producing skill (e.g. `ba.specify`) to answer the blocking
+     question(s) before proceeding.
+   - **Proceed anyway** — continue to the suggested next skill despite the open gap.
+
+   This is advisory only: it never auto-approves and never hard-blocks (per the constitution's
+   human-in-the-loop principle).
+6. **Record an Override when the analyst proceeds anyway.** If the analyst explicitly chooses to
+   proceed past blocking open questions, append an **Override Record** capturing: the workflow step
+   being entered, the blocking question ID(s) overridden, who approved (the analyst), and a
+   timestamp. Write it to:
+   - the prerequisite's **elicitation-plan Round Log** (`## Round Log` → Overrides line) in deep
+     mode, **or**
+   - the requirements artifact's **`## Override Log`** section when no `elicitation-plan.md` exists
+     (quick mode).
+
+   Never fabricate the approval — only record an override the analyst actually authorised, and
+   never set `status: approved` on the analyst's behalf.

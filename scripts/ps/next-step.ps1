@@ -145,6 +145,16 @@ if ($requires -ne 'none' -and -not [string]::IsNullOrEmpty($requires)) {
         Bakit-Log "  Review and set 'status: approved' in $requires, then run $skill."
         exit 0
     }
+    # Advisory only (007): if the approved prerequisite still carries blocking open
+    # questions, surface a warning but DO NOT block — the analyst decides whether to
+    # proceed or first resolve the gaps. This never changes the exit code.
+    $blocking = Bakit-FrontmatterField $reqPath 'blocking_questions'
+    if ($blocking -notmatch '^[0-9]+$') { $blocking = '0' }
+    if ([int]$blocking -gt 0) {
+        Bakit-Warn "$requires has $blocking blocking open question(s) still unresolved."
+        Bakit-Log  "  Advisory: you may proceed to $skill, but resolving the blocking"
+        Bakit-Log  "    question(s) first is recommended. See its '## Open Questions' table."
+    }
 }
 
 Bakit-Log "Next: $skill"

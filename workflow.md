@@ -27,6 +27,25 @@ analyst is pointed to the approval/edit step first.
 `ba.analyze-docs` and `ba.specify` can both be entered directly from `inputs/`;
 analysts may skip `ba.analyze-docs` when working from notes rather than existing documents.
 
+### Gap-aware advisories (additive, non-blocking)
+
+Artifacts may carry a lightweight rollup of unresolved **open questions** in their front-matter
+(`open_questions`, `blocking_questions`) backed by a structured `## Open Questions` table. These
+power purely **advisory** behavior that never changes the approval gates above:
+
+- `ba.specify` presents a **decomposition-readiness summary** (resolved / open / blocking) and,
+  for each blocking item, options with their implications — informing the analyst without
+  auto-approving.
+- `next-step.sh` / `ba.next` emit an **advisory warning** when an approved prerequisite still
+  carries blocking open questions; the analyst may resolve them first or **proceed anyway**.
+  Proceeding records an **Override** (in the elicitation-plan Round Log, or the requirements
+  `## Override Log` in quick mode). The exit code and gates are unchanged.
+- Open questions detected during `ba.analyze-docs` are **carried forward** into `ba.specify` (with
+  an origin trace reference, de-duplicated), so gaps are not silently lost across steps.
+
+Consistent with the constitution's human-in-the-loop principle, none of these advisories
+self-approve, silently escalate, or hard-block; the analyst always decides.
+
 ## Steps (machine-readable)
 
 The rows below are consumed by `next-step.sh`. Columns are pipe-delimited:

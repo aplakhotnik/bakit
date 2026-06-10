@@ -30,18 +30,31 @@ Guided documentation analysis. Follow `memory/ba-constitution.md` and
 4. **Extract & assess.** Identify candidate requirements, gaps, inconsistencies, and open
    questions across the sources, reconciling them against the KB context from step 2 (flag where
    a source contradicts known knowledge).
-5. **Cite everything.** Every extracted requirement and finding MUST cite its origin inline — a
+5. **Optional clarification round (analyst-driven, bounded).** If step 4 surfaced **material
+   contradictions** between sources (or against the KB), you MAY run a **single** clarification
+   round of **at most three** prioritized questions before drafting — focus on the highest-impact
+   contradictions first. This round is optional: if there are no material contradictions, or the
+   analyst prefers a one-shot analysis, **skip it and proceed directly to drafting** (the one-shot
+   path is always available).
+   - Ask the bounded questions, then **fold the analyst's answers** into the extracted findings
+     (update requirements/gaps and cite the answer's origin).
+   - For any contradiction that remains **unresolved** after the round, record it as a
+     **structured open question** in the artifact's `## Open Questions` table (ID, Question,
+     Status `open`, Blocking flag, Origin, Resolution `—`) and keep the front-matter rollup
+     (`open_questions` / `blocking_questions`) in sync. Never resolve a contradiction by asserting
+     an assumption as fact.
+6. **Cite everything.** Every extracted requirement and finding MUST cite its origin inline — a
    source document and section (`<!-- source: inputs/<file> § <section> -->`) or a knowledge-base
    entry (`<!-- source: kb/<entry> -->`).
-6. **Flag assumptions.** Any inferred or unsupported content goes under "Assumptions" and into
+7. **Flag assumptions.** Any inferred or unsupported content goes under "Assumptions" and into
    the `assumptions` front-matter — never stated as established fact.
-7. **Draft the artifact.** Populate `templates/artifacts/docs-analysis.md`; set front-matter
+8. **Draft the artifact.** Populate `templates/artifacts/docs-analysis.md`; set front-matter
    `id`, `title`, `status: draft`, `created`/`updated`, and a NON-EMPTY `sources` list naming
    the reviewed documents.
-8. **Capture reusable knowledge.** If the analysis surfaced durable, reusable facts (agreed
+9. **Capture reusable knowledge.** If the analysis surfaced durable, reusable facts (agreed
    terms, decisions, constraints), add or update the relevant `kb/` entry and reflect it in that
    `kb/index.md`.
-9. **Present for review.** Show as an editable draft; do not self-approve.
+10. **Present for review.** Show as an editable draft; do not self-approve.
 
 ## Validation
 

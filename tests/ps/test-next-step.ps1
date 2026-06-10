@@ -114,6 +114,29 @@ try {
     # D7. Add estimated-backlog -> all discovery states produced output.
     Mk-Art (Join-Path $TASK3 'artifacts/estimated-backlog.md') 'estimated-backlog' 'draft' 'derived_from: [test-product-backlog]'
     if ((D-Next @('Demo', '003-discovery-run')) -match 'produced output') { Ok 'discovery: all states done -> complete' } else { No 'discovery: all states done -> complete' }
+
+    # --- 007: advisory blocking-gap warning before a dependent step ---
+
+    # B1. Approved requirements with a blocking open question -> warn AND still suggest write-stories.
+    & $INIT_TASK 'Demo' 'Gap Aware' 2>$null 1>$null
+    $TASK4 = (Join-Path $WS 'demo/tasks/004-gap-aware')
+    Mk-Art (Join-Path $TASK4 'artifacts/requirements.md') 'requirements' 'approved' "open_questions: 1`nblocking_questions: 1"
+    $out4 = Next-Out @('Demo', '004-gap-aware')
+    if ($out4 -match 'Next: ba\.write-stories') { Ok 'blocking-gap: still suggests write-stories' } else { No 'blocking-gap: still suggests write-stories' }
+    if ($out4 -match 'blocking') { Ok 'blocking-gap: advisory warning shown' } else { No 'blocking-gap: advisory warning shown' }
+    & $NEXT 'Demo' '004-gap-aware' 2>$null 1>$null
+    if ($LASTEXITCODE -eq 0) { Ok 'blocking-gap: exit 0 (advisory)' } else { No 'blocking-gap: exit 0 (advisory)' }
+
+    # B2. Approved requirements with NO blocking questions -> no warning (unchanged behavior).
+    Mk-Art (Join-Path $TASK4 'artifacts/requirements.md') 'requirements' 'approved' "open_questions: 1`nblocking_questions: 0"
+    $out5 = Next-Out @('Demo', '004-gap-aware')
+    if ($out5 -match 'Next: ba\.write-stories') { Ok 'no-blocking: suggests write-stories' } else { No 'no-blocking: suggests write-stories' }
+    if ($out5 -match 'blocking') { No 'no-blocking: should NOT warn about blocking' } else { Ok 'no-blocking: no blocking warning' }
+
+    # B3. Draft requirements with a blocking question -> existing approval gate still shown first.
+    Mk-Art (Join-Path $TASK4 'artifacts/requirements.md') 'requirements' 'draft' "open_questions: 1`nblocking_questions: 1"
+    $out6 = Next-Out @('Demo', '004-gap-aware')
+    if ($out6 -match 'gate not met') { Ok 'draft+blocking: approval gate shown (unchanged)' } else { No 'draft+blocking: approval gate shown (unchanged)' }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

@@ -54,6 +54,13 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
      are ambiguous, conflicting, or incomplete. Deep mode runs the iterative loop in step 5.
    - When unsure, prefer deep mode; you may also start in quick mode and escalate to deep mode if
      material ambiguities surface while drafting.
+   - **Quick-mode escalation (never silent).** While in quick mode, if a **material contradiction**
+     or an **unanswered blocking question** surfaces, do NOT draft over it: **recommend** switching
+     to deep mode (the iterative elicitation loop) and **wait for the analyst's choice** — never
+     switch automatically. If the analyst **accepts**, run the deep-mode loop (step 5). If the
+     analyst **declines**, continue in quick mode and record the unresolved item in the structured
+     `## Open Questions` table, marking it `Blocking: true` when applicable (so it flows into the
+     readiness summary and the advisory next-step warning).
 
 4. **Ground in the knowledge base and project context FIRST.** Before drafting, consult curated
    context so you reuse known facts instead of re-asking:
@@ -66,6 +73,14 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
      project-level `kb/`). Do NOT re-elicit it here. If it is absent, continue and note its
      absence as an assumption.
    - Cite grounded content inline where you use it: `<!-- source: kb/<entry> -->`.
+   - **Carry gaps forward from documentation analysis.** If the active task has an
+     `artifacts/docs-analysis.md`, seed this work's open questions from its **Open Questions**,
+     **Gaps & Inconsistencies** before the first new clarification round. Bring each item into the
+     elicitation plan / requirements `## Open Questions` table with an **origin trace reference** to
+     the source (e.g. `docs-analysis:OQ-002`), preserving its blocking flag. **De-duplicate** against
+     freshly detected questions by matching the trace reference first, then a normalized exact text
+     match — keep one row, noting both origins. If there is **no** `docs-analysis.md`, proceed
+     normally with no seeding and no error.
 
 5. **Run the iterative elicitation loop (deep mode only — deep research).** In quick mode, skip
    this step (you already ran a single clarification pass in step 3) and go to step 6. In deep
@@ -98,6 +113,13 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
    - Set front-matter: a unique `id`, the `title`, `status: draft`, `created`/`updated` to today.
    - Populate `assumptions` (also reflected in the Assumptions section); never present an
      assumption as fact.
+   - Record every open item in the **structured `## Open Questions` table** (ID, Question, Status,
+     Blocking, Origin, Resolution) — not as free text. Mark each item's `Blocking` flag (propose a
+     default from scope/impact, but the analyst owns the final call). For any item the analyst has
+     resolved or deferred, set `Status` accordingly and fill the `Resolution` note (the
+     answer/decision + rationale; for deferred, the defer reason) — `open` items leave it `—`.
+   - Keep the front-matter rollup in sync: set `open_questions` to the number of `open` rows and
+     `blocking_questions` to the number of `open` rows whose `Blocking` is `true`.
 
 7. **Guard existing output (non-destructive).** Before writing `requirements.md`:
    - If an **approved** `requirements.md` already exists, do NOT overwrite it without explicit
@@ -123,6 +145,14 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
     plus `elicitation-plan.md` in deep mode. Do NOT set `status: approved` — that is the analyst's
     decision. Once `requirements.md` is approved it becomes the source of truth for
     `ba.write-stories`.
+    - **Decomposition-readiness summary.** Alongside the artifact, present a readiness summary built
+      from the `## Open Questions` table, in three groups: **Resolved** (with their resolution),
+      **Open (non-blocking)**, and **Blocking**. For each **blocking** item, state specifically what
+      is needed to close it, expressed as **options with the implication of each** (reuse the
+      bounded ≤3 prioritized questioning pattern from step 5). When no blocking items remain, state
+      plainly that the specification has no outstanding blocking questions and is **ready to
+      decompose**. This summary is advisory — it informs the analyst; it never auto-approves or
+      hard-blocks (the analyst still owns approval, per the constitution's human-in-the-loop rule).
 
 ## Validation
 

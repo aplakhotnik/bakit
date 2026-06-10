@@ -18,6 +18,12 @@ function Run-Check {
     return $LASTEXITCODE
 }
 
+# Run check, return captured stdout (lines).
+function Run-CheckOut {
+    param([string[]]$CheckArgs)
+    return (& $CHECK @CheckArgs 2>$null)
+}
+
 # Write text as UTF-8 no BOM, LF.
 function Write-Art {
     param([string]$Path, [string]$Text)
@@ -103,6 +109,38 @@ try {
     $ebOk = (Join-Path $TMP 'eb-ok.md')
     Write-Art $ebOk "---`nid: EB-2`ntype: estimated-backlog`ntitle: Estimated approved`nstatus: approved`ncreated: 2026-06-07`nupdated: 2026-06-07`nderived_from: [PB-1]`n---`n"
     if ((Run-Check @('--require-approved', $ebOk)) -eq 0) { Ok 'approved discovery artifact passes gate' } else { No 'approved discovery artifact passes gate' }
+
+    # --- 007: open/blocking rollup reporting + strict mode (--require-no-blocking) ---
+
+    # 15. Counts are reported on success.
+    $oq = (Join-Path $TMP 'oq.md')
+    Write-Art $oq "---`nid: REQ-OQ`ntype: requirements`ntitle: With open questions`nstatus: approved`ncreated: 2026-06-10`nupdated: 2026-06-10`nopen_questions: 2`nblocking_questions: 1`n---`n# Body`n"
+    $out = (Run-CheckOut @($oq)) -join "`n"
+    if ($out -match '(?m)^open_questions: 2$') { Ok 'reports open_questions count' } else { No 'reports open_questions count' }
+    if ($out -match '(?m)^blocking_questions: 1$') { Ok 'reports blocking_questions count' } else { No 'reports blocking_questions count' }
+    if ((Run-Check @($oq)) -eq 0) { Ok 'open/blocking advisory by default (exit 0)' } else { No 'open/blocking advisory by default (exit 0)' }
+
+    # 16. --require-no-blocking exits 3 when blocking questions remain.
+    if ((Run-Check @('--require-no-blocking', $oq)) -eq 3) { Ok 'strict mode exits 3 when blocking remain' } else { No 'strict mode exits 3 when blocking remain' }
+
+    # 17. --require-no-blocking exits 0 when no blocking questions.
+    $oq0 = (Join-Path $TMP 'oq0.md')
+    Write-Art $oq0 "---`nid: REQ-OQ0`ntype: requirements`ntitle: No blocking`nstatus: approved`ncreated: 2026-06-10`nupdated: 2026-06-10`nopen_questions: 2`nblocking_questions: 0`n---`n# Body`n"
+    if ((Run-Check @('--require-no-blocking', $oq0)) -eq 0) { Ok 'strict mode exits 0 when no blocking' } else { No 'strict mode exits 0 when no blocking' }
+
+    # 18. Legacy artifact (no rollup fields) reports 0/0 and exits 0 (backward compatible).
+    $out = (Run-CheckOut @($req)) -join "`n"
+    if ($out -match '(?m)^open_questions: 0$') { Ok 'legacy artifact reports open_questions: 0' } else { No 'legacy artifact reports open_questions: 0' }
+    if ($out -match '(?m)^blocking_questions: 0$') { Ok 'legacy artifact reports blocking_questions: 0' } else { No 'legacy artifact reports blocking_questions: 0' }
+    if ((Run-Check @('--require-no-blocking', $req)) -eq 0) { Ok 'legacy artifact passes strict mode (exit 0)' } else { No 'legacy artifact passes strict mode (exit 0)' }
+
+    # 19. Approval gate takes precedence over blocking gate: draft + blocking => exit 2.
+    $oqDraft = (Join-Path $TMP 'oq-draft.md')
+    Write-Art $oqDraft "---`nid: REQ-OQD`ntype: requirements`ntitle: Draft with blocking`nstatus: draft`ncreated: 2026-06-10`nupdated: 2026-06-10`nopen_questions: 1`nblocking_questions: 1`n---`n# Body`n"
+    if ((Run-Check @('--require-approved', '--require-no-blocking', $oqDraft)) -eq 2) { Ok 'approval gate precedes blocking gate (exit 2)' } else { No 'approval gate precedes blocking gate (exit 2)' }
+
+    # 20. Invalid artifact still exits 1 even with strict flag.
+    if ((Run-Check @('--require-no-blocking', $nofm)) -eq 1) { Ok 'invalid artifact exits 1 under strict mode' } else { No 'invalid artifact exits 1 under strict mode' }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

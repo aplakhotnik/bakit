@@ -124,6 +124,18 @@ if [ "$requires" != "none" ] && [ -n "$requires" ]; then
     bakit_log "  ✎ Review and set 'status: approved' in $requires, then run $skill."
     exit 0
   fi
+  # Advisory only (007): if the approved prerequisite still carries blocking open
+  # questions, surface a warning but DO NOT block — the analyst decides whether to
+  # proceed or first resolve the gaps. This never changes the exit code.
+  blocking=$(bakit_frontmatter_field "$req_path" "blocking_questions" 2>/dev/null || true)
+  case "$blocking" in
+    ''|*[!0-9]*) blocking=0 ;;
+  esac
+  if [ "$blocking" -gt 0 ]; then
+    bakit_warn "$requires has $blocking blocking open question(s) still unresolved."
+    bakit_log  "  ⚠ Advisory: you may proceed to $skill, but resolving the blocking"
+    bakit_log  "    question(s) first is recommended. See its '## Open Questions' table."
+  fi
 fi
 
 bakit_log "Next: $skill"

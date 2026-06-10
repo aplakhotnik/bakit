@@ -7,6 +7,8 @@ created: ""
 updated: ""
 sources: []
 assumptions: []
+open_questions: 0
+blocking_questions: 0
 ---
 
 # Documentation Analysis: {{TITLE}}
@@ -36,9 +38,21 @@ assumptions: []
 
 ## Open Questions
 
-<!-- Questions that need stakeholder/analyst clarification. -->
+<!--
+  Questions needing stakeholder/analyst clarification, in a structured, parseable table.
+  Keep the front-matter rollup in sync: `open_questions` = rows with Status `open`;
+  `blocking_questions` = `open` rows with Blocking `true`.
+  - ID — stable, unique within this artifact (e.g. OQ-001). Downstream skills carry these forward by trace ref.
+  - Status — open | resolved | deferred (blank ⇒ open).
+  - Blocking — true | false (blank ⇒ false).
+  - Origin — the source document/section the question arises from.
+  - Resolution — REQUIRED (non "—") when Status is resolved/deferred (answer/decision + rationale;
+    for deferred, the defer reason). Leave "—" while open.
+-->
 
-- …
+| ID | Question | Status | Blocking | Origin | Resolution |
+|----|----------|--------|----------|--------|------------|
+| OQ-001 | … | open | false | inputs/<file> § <section> | — |
 
 ## Assumptions
 

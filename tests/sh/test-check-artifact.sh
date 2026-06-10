@@ -15,6 +15,9 @@ no()   { fail=$((fail+1)); printf 'FAIL - %s\n' "$1"; }
 # Helper: run check, capture exit code without aborting (set -e safe).
 run_check() { _ec=0; sh "$CHECK" "$@" >/dev/null 2>&1 || _ec=$?; printf '%s' "$_ec"; }
 
+# Helper: run check, capture stdout (set -e safe); exit code discarded.
+run_check_out() { sh "$CHECK" "$@" 2>/dev/null || true; }
+
 # 1. Valid approved requirements artifact.
 cat > "$TMP/req.md" <<'EOF'
 ---
@@ -212,6 +215,71 @@ derived_from: [PB-1]
 ---
 EOF
 [ "$(run_check --require-approved "$TMP/eb-ok.md")" = "0" ] && ok "approved discovery artifact passes gate" || no "approved discovery artifact passes gate"
+
+# --- 007: open/blocking rollup reporting + strict mode (--require-no-blocking) ---
+
+# 15. Counts are reported on success (open_questions / blocking_questions in stdout).
+cat > "$TMP/oq.md" <<'EOF'
+---
+id: REQ-OQ
+type: requirements
+title: With open questions
+status: approved
+created: 2026-06-10
+updated: 2026-06-10
+open_questions: 2
+blocking_questions: 1
+---
+# Body
+EOF
+out=$(run_check_out "$TMP/oq.md")
+printf '%s' "$out" | grep -q '^open_questions: 2$' && ok "reports open_questions count" || no "reports open_questions count"
+printf '%s' "$out" | grep -q '^blocking_questions: 1$' && ok "reports blocking_questions count" || no "reports blocking_questions count"
+[ "$(run_check "$TMP/oq.md")" = "0" ] && ok "open/blocking advisory by default (exit 0)" || no "open/blocking advisory by default (exit 0)"
+
+# 16. --require-no-blocking exits 3 when blocking questions remain.
+[ "$(run_check --require-no-blocking "$TMP/oq.md")" = "3" ] && ok "strict mode exits 3 when blocking remain" || no "strict mode exits 3 when blocking remain"
+
+# 17. --require-no-blocking exits 0 when no blocking questions.
+cat > "$TMP/oq0.md" <<'EOF'
+---
+id: REQ-OQ0
+type: requirements
+title: No blocking
+status: approved
+created: 2026-06-10
+updated: 2026-06-10
+open_questions: 2
+blocking_questions: 0
+---
+# Body
+EOF
+[ "$(run_check --require-no-blocking "$TMP/oq0.md")" = "0" ] && ok "strict mode exits 0 when no blocking" || no "strict mode exits 0 when no blocking"
+
+# 18. Legacy artifact (no rollup fields) reports 0/0 and exits 0 (backward compatible).
+out=$(run_check_out "$TMP/req.md")
+printf '%s' "$out" | grep -q '^open_questions: 0$' && ok "legacy artifact reports open_questions: 0" || no "legacy artifact reports open_questions: 0"
+printf '%s' "$out" | grep -q '^blocking_questions: 0$' && ok "legacy artifact reports blocking_questions: 0" || no "legacy artifact reports blocking_questions: 0"
+[ "$(run_check --require-no-blocking "$TMP/req.md")" = "0" ] && ok "legacy artifact passes strict mode (exit 0)" || no "legacy artifact passes strict mode (exit 0)"
+
+# 19. Approval gate takes precedence over blocking gate: draft + blocking => exit 2.
+cat > "$TMP/oq-draft.md" <<'EOF'
+---
+id: REQ-OQD
+type: requirements
+title: Draft with blocking
+status: draft
+created: 2026-06-10
+updated: 2026-06-10
+open_questions: 1
+blocking_questions: 1
+---
+# Body
+EOF
+[ "$(run_check --require-approved --require-no-blocking "$TMP/oq-draft.md")" = "2" ] && ok "approval gate precedes blocking gate (exit 2)" || no "approval gate precedes blocking gate (exit 2)"
+
+# 20. Invalid artifact still exits 1 even with strict flag (counts not required).
+[ "$(run_check --require-no-blocking "$TMP/nofm.md")" = "1" ] && ok "invalid artifact exits 1 under strict mode" || no "invalid artifact exits 1 under strict mode"
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

@@ -3,24 +3,29 @@
 # Usage:
 #   check-artifact.ps1 <artifact.md>
 #   check-artifact.ps1 --require-approved <artifact.md>
+#   check-artifact.ps1 --require-no-blocking <artifact.md>
 #
 # Exit codes:
 #   0  valid (and, with --require-approved, status is 'approved')
 #   1  invalid front-matter / missing required fields
 #   2  valid but status is not 'approved' (only with --require-approved)
+#   3  valid but blocking open questions remain (only with --require-no-blocking)
 #
-# Prints the resolved status on success so callers/skills can gate on it.
+# Prints the resolved status plus the open/blocking rollup on success so
+# callers/skills can gate on it.
 
 . (Join-Path $PSScriptRoot 'common.ps1')
 
 $RequireApproved = $false
+$RequireNoBlocking = $false
 $File = ''
 
 foreach ($a in $args) {
     $s = [string]$a
     if ($s -eq '--require-approved') { $RequireApproved = $true }
+    elseif ($s -eq '--require-no-blocking') { $RequireNoBlocking = $true }
     elseif ($s -eq '-h' -or $s -eq '--help') {
-        Bakit-Log 'Usage: check-artifact.ps1 [--require-approved] <artifact.md>'
+        Bakit-Log 'Usage: check-artifact.ps1 [--require-approved] [--require-no-blocking] <artifact.md>'
         exit 0
     }
     elseif ($s.StartsWith('-')) { Bakit-Die "unknown option: $s" }
@@ -84,5 +89,22 @@ if ($RequireApproved -and $Status -ne 'approved') {
     exit 2
 }
 
+# 6. Open-question rollup (007). Absent fields default to 0 (backward compatible).
+$OpenQ = Bakit-FrontmatterField $File 'open_questions'
+$BlockingQ = Bakit-FrontmatterField $File 'blocking_questions'
+if ($OpenQ -notmatch '^[0-9]+$') { $OpenQ = '0' }
+if ($BlockingQ -notmatch '^[0-9]+$') { $BlockingQ = '0' }
+
+# 7. Blocking gate (opt-in). Reported advisory-only unless --require-no-blocking.
+if ($RequireNoBlocking -and [int]$BlockingQ -gt 0) {
+    Bakit-Log "status: $Status"
+    Bakit-Log "open_questions: $OpenQ"
+    Bakit-Log "blocking_questions: $BlockingQ"
+    Bakit-Warn "blocking open questions remain: $File"
+    exit 3
+}
+
 Bakit-Log "status: $Status"
+Bakit-Log "open_questions: $OpenQ"
+Bakit-Log "blocking_questions: $BlockingQ"
 exit 0

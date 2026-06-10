@@ -7,6 +7,8 @@ created: ""
 updated: ""
 round: 1
 assumptions: []
+open_questions: 0
+blocking_questions: 0
 ---
 
 # Elicitation Plan: {{TITLE}}
@@ -30,18 +32,24 @@ assumptions: []
 <!--
   Prioritized (scope before detail), bounded per round. Each question offers options and the
   implication of each, so the analyst can choose quickly. Move answered items to "Resolved".
+  Keep the front-matter rollup in sync: `open_questions` = rows with Status `open`;
+  `blocking_questions` = `open` rows with Blocking `true`.
+  - ID — stable, unique within this artifact (e.g. OQ-001).
+  - Status — open | resolved | deferred (blank ⇒ open).
+  - Blocking — true | false (blank ⇒ false).
+  - Origin — where it came from, or a trace ref to a carried-forward item (e.g. `docs-analysis:OQ-002`).
 -->
 
-| # | Question | Options (with implication) | Priority |
-|---|----------|----------------------------|----------|
-| Q1 | <ambiguity / gap / conflict> | a) <option> — <implication>; b) <option> — <implication> | High |
+| ID | Question | Options (with implication) | Status | Blocking | Origin | Priority |
+|----|----------|----------------------------|--------|----------|--------|----------|
+| OQ-001 | <ambiguity / gap / conflict> | a) <option> — <implication>; b) <option> — <implication> | open | false | <source / trace ref> | High |
 
 ## Resolved
 
-<!-- Questions answered in earlier rounds, with the decision taken. -->
+<!-- Questions answered in earlier rounds, with the decision taken (the resolution note). -->
 
-| # | Question | Decision | Round |
-|---|----------|----------|-------|
+| ID | Question | Resolution (decision + rationale) | Round |
+|----|----------|-----------------------------------|-------|
 | — | — | — | — |
 
 ## Next Steps
@@ -58,6 +66,7 @@ assumptions: []
 
 - **Asked**: <questions raised this round>
 - **Answered**: <analyst's answers, or "pending">
+- **Overrides**: <none, or: proceeded into <step> past blocking OQ-<ids> at <timestamp> — optional note>
 
 ## Convergence
 

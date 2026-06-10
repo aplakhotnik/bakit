@@ -4,13 +4,16 @@
 # Usage:
 #   check-artifact.sh <artifact.md>
 #   check-artifact.sh --require-approved <artifact.md>
+#   check-artifact.sh --require-no-blocking <artifact.md>
 #
 # Exit codes:
 #   0  valid (and, with --require-approved, status is 'approved')
 #   1  invalid front-matter / missing required fields
 #   2  valid but status is not 'approved' (only with --require-approved)
+#   3  valid but blocking open questions remain (only with --require-no-blocking)
 #
-# Prints the resolved status on success so callers/skills can gate on it.
+# Prints the resolved status plus the open/blocking rollup on success so
+# callers/skills can gate on it.
 
 set -eu
 
@@ -18,12 +21,14 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
 
 REQUIRE_APPROVED=0
+REQUIRE_NO_BLOCKING=0
 FILE=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --require-approved) REQUIRE_APPROVED=1; shift ;;
-    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --require-no-blocking) REQUIRE_NO_BLOCKING=1; shift ;;
+    -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) bakit_die "unknown option: $1" ;;
     *) FILE="$1"; shift ;;
   esac
@@ -79,5 +84,22 @@ if [ "$REQUIRE_APPROVED" -eq 1 ] && [ "$STATUS" != "approved" ]; then
   exit 2
 fi
 
+# 6. Open-question rollup (007). Absent fields default to 0 (backward compatible).
+OPEN_Q=$(bakit_frontmatter_field "$FILE" open_questions || true)
+BLOCKING_Q=$(bakit_frontmatter_field "$FILE" blocking_questions || true)
+case "$OPEN_Q" in ''|*[!0-9]*) OPEN_Q=0 ;; esac
+case "$BLOCKING_Q" in ''|*[!0-9]*) BLOCKING_Q=0 ;; esac
+
+# 7. Blocking gate (opt-in). Reported advisory-only unless --require-no-blocking.
+if [ "$REQUIRE_NO_BLOCKING" -eq 1 ] && [ "$BLOCKING_Q" -gt 0 ]; then
+  printf 'status: %s\n' "$STATUS"
+  printf 'open_questions: %s\n' "$OPEN_Q"
+  printf 'blocking_questions: %s\n' "$BLOCKING_Q"
+  bakit_warn "blocking open questions remain: $FILE"
+  exit 3
+fi
+
 printf 'status: %s\n' "$STATUS"
+printf 'open_questions: %s\n' "$OPEN_Q"
+printf 'blocking_questions: %s\n' "$BLOCKING_Q"
 exit 0
