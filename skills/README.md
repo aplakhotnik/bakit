@@ -4,6 +4,12 @@ Skills are **agent-agnostic** guided BA activities. Each is a single Markdown fi
 structured front-matter header and step instructions. A skill produces one structured artifact
 into the active task and enforces the human-in-the-loop review gate.
 
+The installer maps each skill into your agent's command directory. For most agents this is a
+flat file (e.g. `.github/prompts/ba.<name>.prompt.md`, `.claude/commands/ba.<name>.md`); for
+**Antigravity** each skill becomes a self-contained folder `.agents/skills/ba.<name>/` with a
+`SKILL.md` plus any helper scripts/templates it references. The instruction body is identical
+across every target.
+
 ## Available skills
 
 ### Orchestration (agent-driven flow)
@@ -78,7 +84,9 @@ existing skill, script, or template.
 4. **Add a template** under `templates/artifacts/<template>.md` using the front-matter
    convention in `templates/artifacts/_frontmatter.md`. If your artifact `type` needs new
    conditional required fields, extend `scripts/sh/check-artifact.sh` accordingly.
-5. **Re-run the installer** (`./install.sh`) to map the new skill into your agent.
+5. **Re-run the installer** (`./install.sh`) to map the new skill into your agent. Skills are
+   discovered by the `ba.*` naming convention, so no installer changes are needed — including
+   for the Antigravity skill-folder packaging.
 
 That's it — the new skill works alongside the others without touching them (validates FR-019 /
 SC-004).
@@ -86,8 +94,8 @@ SC-004).
 ## Agent-agnostic validation note (FR-009a)
 
 These skills avoid agent-proprietary features and rely only on plain prompt instructions plus
-the shell helpers, so they run consistently across agents (e.g., Copilot, Claude, Cursor). To
-spot-check: run `ba.specify` on the same inputs in a second agent and confirm the
-produced `requirements.md` conforms to the same template and passes `check-artifact.sh`.
+the shell helpers, so they run consistently across agents (e.g., Copilot, Claude, Cursor, and
+Antigravity). To spot-check: run `ba.specify` on the same inputs in a second agent and confirm
+the produced `requirements.md` conforms to the same template and passes `check-artifact.sh`.
 
 <!-- Record cross-agent validation results here as you verify them. -->
