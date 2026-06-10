@@ -46,8 +46,8 @@ No build step, package manager, or network access is required — the installer 
 ### 1. Clone the repository
 
 ```sh
-git clone https://github.com/aplakhotnik/speckit-bakit.git
-cd speckit-bakit/bakit
+git clone https://github.com/aplakhotnik/bakit.git
+cd bakit
 ```
 
 ### 2. Run the installer
