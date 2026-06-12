@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      # POSIX sh suite: validator, next-step, init, installer, doc-links,
+      # dangling-ref guard. Not run on Windows (no POSIX sh).
+      - name: Shell test suite (POSIX sh)
+        if: runner.os != 'Windows'
+        run: sh tests/sh/run-all.sh
+
+      # PowerShell suite mirrors the shell suite. pwsh is preinstalled on all
+      # GitHub-hosted runners (Linux, macOS, Windows).
+      - name: PowerShell test suite
+        run: pwsh -File tests/ps/run-all.ps1

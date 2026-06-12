@@ -23,6 +23,7 @@ software features.
 | Install and create your first project | **[Getting started](docs/getting-started.md)** |
 | Learn the everyday BA flow | **[Working with the default workflow](docs/workflows.md)** |
 | Run the consultative idea-to-roadmap process | **[Discovery workflow (advanced)](docs/discovery.md)** |
+| See a finished project before you start | **[Worked example](examples/README.md)** |
 | Look up a specific skill | **[Skills reference](skills/README.md)** |
 | Fix a problem | **[FAQ & troubleshooting](docs/faq.md)** |
 
@@ -110,11 +111,12 @@ bakit/
 ├── workflow.md                # default ordered skill chain + approval gates
 ├── workflow-discovery.md      # separate Discovery state-machine manifest (advanced)
 ├── docs/                      # guides: getting-started, concepts, workflows, discovery, faq
+├── examples/                  # a finished sample project you can read before running anything
 ├── skills/                    # agent-agnostic BA skill definitions (+ skills/README.md reference)
 ├── templates/                 # project + task (kb) + artifact templates
 ├── scripts/sh/ · scripts/ps/  # POSIX shell + PowerShell helpers (full parity)
 ├── memory/                    # principles + skill contract surfaced to skills at runtime
-├── tests/sh/ · tests/ps/      # mirrored test suites
+├── tests/sh/ · tests/ps/      # mirrored test suites (run in CI on Linux/macOS/Windows)
 ├── CHANGELOG.md · CONTRIBUTING.md · LICENSE
 ```
 

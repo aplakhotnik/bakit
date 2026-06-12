@@ -11,6 +11,14 @@ All notable changes to BA-Kit are documented here. The format is based on
 - **Documentation set** under `docs/`: [Getting started](docs/getting-started.md),
   [Concepts & glossary](docs/concepts.md), [Working with the default workflow](docs/workflows.md),
   the advanced [Discovery workflow](docs/discovery.md), and an [FAQ](docs/faq.md).
+- **Worked example** under `examples/`: a finished sample project (`customer-feedback-portal`)
+  showing the default flow end to end — raw input → docs-analysis → approved requirements →
+  user stories — so newcomers can see the output before running anything.
+- **Continuous integration** (`.github/workflows/ci.yml`): runs the full shell and PowerShell
+  test suites on Linux, macOS, and Windows for every push and pull request.
+- **New guard tests** (mirrored sh + ps): a Markdown link checker (`test-doc-links`) that fails
+  on broken relative links, and a dangling-reference guard (`test-no-dangling-refs`) that keeps
+  the package self-contained.
 - `CHANGELOG.md` (this file) and a `.gitignore` for installer-generated outputs and runtime
   workspaces.
 - Gap-aware workflow (feature 007): structured open-question tracking with `open_questions` /
