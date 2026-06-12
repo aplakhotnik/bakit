@@ -6,6 +6,10 @@ AI assistant by typing commands like `/ba.start-project`.
 
 New to the terms used here? Read **[Concepts & glossary](concepts.md)** first (5 minutes).
 
+Here's the whole flow in a few seconds — slashing between the BA skills from inside the assistant:
+
+![BA-Kit skills demo: moving through start-project, start-task, analyze-docs, specify, and render-confluence](assets/skill_demo.gif)
+
 ## 1. Prerequisites
 
 - **git** — to download BA-Kit.

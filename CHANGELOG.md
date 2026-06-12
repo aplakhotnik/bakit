@@ -6,6 +6,10 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-06-12
+
+First public release.
+
 ### Added
 
 - **Documentation set** under `docs/`: [Getting started](docs/getting-started.md),
@@ -13,7 +17,12 @@ All notable changes to BA-Kit are documented here. The format is based on
   the advanced [Discovery workflow](docs/discovery.md), and an [FAQ](docs/faq.md).
 - **Worked example** under `examples/`: a finished sample project (`customer-feedback-portal`)
   showing the default flow end to end — raw input → docs-analysis → approved requirements →
-  user stories — so newcomers can see the output before running anything.
+  user stories → rendered Confluence page — so newcomers can see the output before running
+  anything. The user stories now include personas, a story map, and detailed Given/When/Then
+  acceptance criteria, and a `deliverables/` folder holds a Confluence-ready page rendered from
+  the approved stories.
+- **Demo recording** (`docs/assets/skill_demo.gif`) embedded in the README and Getting started
+  guide, showing the BA skills driven from inside the AI assistant.
 - **Continuous integration** (`.github/workflows/ci.yml`): runs the full shell and PowerShell
   test suites on Linux, macOS, and Windows for every push and pull request.
 - **New guard tests** (mirrored sh + ps): a Markdown link checker (`test-doc-links`) that fails
@@ -46,3 +55,6 @@ All notable changes to BA-Kit are documented here. The format is based on
   package, so the references are now self-contained.
 - Stopped shipping installer-generated outputs (`.github/prompts/`, `.vscode/settings.json`) that
   duplicated `skills/` and risked drifting from the source of truth.
+
+[Unreleased]: https://github.com/aplakhotnik/bakit/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/aplakhotnik/bakit/releases/tag/v0.1.0

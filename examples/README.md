@@ -15,7 +15,7 @@ A small project, **Customer Feedback Portal**, with one task that has been taken
 through the default flow:
 
 ```
-ba.analyze-docs  →  ba.specify  →  ba.write-stories
+ba.analyze-docs  →  ba.specify  →  ba.write-stories  →  ba.render-confluence
 ```
 
 ```
@@ -28,10 +28,12 @@ customer-feedback-portal/
       ├─ inputs/
       │  ├─ README.md                 # guidance placed by init-task
       │  └─ stakeholder-brief.md      # the raw material the analyst was given
-      └─ artifacts/                   # everything the AI + analyst produced
-         ├─ docs-analysis.md          # what was extracted from the inputs
-         ├─ requirements.md           # the approved requirements (status: approved)
-         └─ user-stories.md           # INVEST stories derived from the requirements
+      ├─ artifacts/                   # everything the AI + analyst produced
+      │  ├─ docs-analysis.md          # what was extracted from the inputs
+      │  ├─ requirements.md           # the approved requirements (status: approved)
+      │  └─ user-stories.md           # INVEST stories derived from the requirements
+      └─ deliverables/                # shareable outputs rendered from approved artifacts
+         └─ feedback-intake-confluence.md  # Confluence-ready page rendered from the stories
 ```
 
 ## How to read it
@@ -46,10 +48,16 @@ customer-feedback-portal/
    with every requirement traced back to a source.
 4. See how `ba.write-stories` produced
    [`user-stories.md`](customer-feedback-portal/tasks/001-feedback-intake/artifacts/user-stories.md)
-   from the **approved** requirements.
+   from the **approved** requirements — with personas, a story map, and detailed
+   Given/When/Then acceptance criteria.
+5. See how `ba.render-confluence` turned the approved stories into a shareable
+   [`feedback-intake-confluence.md`](customer-feedback-portal/tasks/001-feedback-intake/deliverables/feedback-intake-confluence.md)
+   page — a **deliverable** rendered from the source artifact, which stays the
+   source of record.
 
-Notice the **traceability**: every requirement cites where it came from, and the
-stories list the requirement IDs they cover. That chain is the whole point.
+Notice the **traceability**: every requirement cites where it came from, the
+stories list the requirement IDs they cover, and the Confluence page records the
+artifact it was rendered from. That chain is the whole point.
 
 ## Want to make your own?
 

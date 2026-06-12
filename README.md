@@ -4,6 +4,7 @@
 > installer, then drive everything from inside your AI assistant.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-informational.svg)](CHANGELOG.md)
 [![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-blue.svg)](#supported-environments)
 [![Agents](https://img.shields.io/badge/agents-Copilot%20%7C%20Claude%20%7C%20Cursor%20%7C%20Antigravity-7952b3.svg)](#supported-environments)
 
@@ -14,6 +15,13 @@ same framework works across multiple AI assistants and IDEs.
 
 Inspired by [spec-kit](https://github.com/github/spec-kit), but for **BA activities** instead of
 software features.
+
+## See it in action
+
+Driving the default flow from inside the AI assistant — slashing between `ba.start-project`,
+`ba.start-task`, `ba.analyze-docs`, `ba.specify`, and `ba.render-confluence`:
+
+![BA-Kit skills demo: moving through start-project, start-task, analyze-docs, specify, and render-confluence](docs/assets/skill_demo.gif)
 
 ## New here? Start with the docs
 
