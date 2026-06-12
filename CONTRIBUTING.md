@@ -7,7 +7,7 @@ welcome: new skills, bug fixes, documentation, and platform parity work.
 ## Ground rules
 
 BA-Kit follows a small set of non-negotiable principles (see
-`.specify/memory/constitution.md`). In short:
+`memory/ba-constitution.md`). In short:
 
 1. **Specification-first** — behavior is described before it is implemented.
 2. **Modular, activity-based skills** — each skill does one BA activity well.

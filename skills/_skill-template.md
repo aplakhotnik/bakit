@@ -10,8 +10,7 @@ template: "templates/artifacts/<template>.md"
 # Skill: `ba.<verb>-<noun>`
 
 > Agent-agnostic BA-Kit skill. Copy this template to create a new skill. Keep behavior aligned
-> with `specs/001-ba-kit-framework/contracts/skill-contract.md` and the principles in
-> `memory/ba-constitution.md`.
+> with the principles and Skill Behavioral Contract in `memory/ba-constitution.md`.
 
 ## When invoked, you MUST
 

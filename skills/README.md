@@ -85,8 +85,8 @@ existing skill, script, or template.
 
 1. **Copy the skill template**: `cp _skill-template.md ba.<verb>-<noun>.md`.
 2. **Fill the header**: `name`, `summary`, `inputs`, `prerequisites`, `output`, `template`.
-3. **Write the steps** following the contract in
-   `specs/001-ba-kit-framework/contracts/skill-contract.md`:
+3. **Write the steps** following the Skill Behavioral Contract in
+   `../memory/ba-constitution.md`:
    resolve the active task → check prerequisites → gather inputs → clarify → produce a `draft`
    artifact with traceability/assumptions → present for review (never self-approve).
 4. **Add a template** under `templates/artifacts/<template>.md` using the front-matter

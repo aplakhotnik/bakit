@@ -14,9 +14,8 @@ current state against the desired future state and produces a **Gap Analysis Mat
 the charter and the Living Discovery Document. It applies standard **BABOK-aligned analysis
 practices conceptually** — there is no dependency on external or licensed BABOK content.
 
-Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md`,
-`specs/001-ba-kit-framework/contracts/skill-contract.md`, and
-`specs/004-discovery-agent-workflow/contracts/discovery-skills.md`.
+Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md` (see §"Skill Behavioral
+Contract" and §"Discovery workflow obligations").
 
 ## Steps
 

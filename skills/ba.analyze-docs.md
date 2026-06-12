@@ -9,8 +9,7 @@ template: "templates/artifacts/docs-analysis.md"
 
 # Skill: `ba.analyze-docs`
 
-Guided documentation analysis. Follow `memory/ba-constitution.md` and
-`specs/001-ba-kit-framework/contracts/skill-contract.md`.
+Guided documentation analysis. Follow `memory/ba-constitution.md`.
 
 ## Steps
 

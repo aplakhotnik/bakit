@@ -14,9 +14,8 @@ it offers estimation methodology options, guides an interactive estimation sessi
 method, and produces an **Estimated Backlog** plus a **Release Roadmap**. It never guesses an
 estimate: any item it cannot size is flagged `UNESTIMABLE`.
 
-Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md`,
-`specs/001-ba-kit-framework/contracts/skill-contract.md`, and
-`specs/004-discovery-agent-workflow/contracts/discovery-skills.md`.
+Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md` (see §"Skill Behavioral
+Contract" and §"Discovery workflow obligations").
 
 ## Steps
 

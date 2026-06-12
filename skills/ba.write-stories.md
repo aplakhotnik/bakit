@@ -9,8 +9,7 @@ template: "templates/artifacts/user-stories.md"
 
 # Skill: `ba.write-stories`
 
-Guided user-story writing. Follow `memory/ba-constitution.md` and
-`specs/001-ba-kit-framework/contracts/skill-contract.md`.
+Guided user-story writing. Follow `memory/ba-constitution.md`.
 
 ## Steps
 

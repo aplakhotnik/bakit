@@ -2,8 +2,7 @@
 
 Every BA-Kit artifact and deliverable begins with this YAML front-matter block. It is the
 machine-readable contract that `scripts/sh/check-artifact.sh` validates and that downstream
-skills read to enforce the review gate. Keep this in sync with the contract at
-`specs/001-ba-kit-framework/contracts/artifact-frontmatter.md`.
+skills read to enforce the review gate. This file is the source of truth for the convention.
 
 ```yaml
 ---
@@ -33,9 +32,8 @@ blocking_questions: 0  # (007) optional rollup: count of open questions with blo
 ## Open-question rollup (007 additive extension)
 
 `open_questions` and `blocking_questions` are an **additive extension introduced by feature 007**
-(gap-aware workflow). They are NOT part of the base `specs/001-ba-kit-framework` front-matter
-contract — the 001 contract remains the source of truth for the required fields above; these two
-fields layer on top of it for the default-chain artifact types only.
+(gap-aware workflow). They layer on top of the base required fields above (which remain the source
+of truth) for the default-chain artifact types only.
 
 - They apply to `docs-analysis`, `requirements`, and `elicitation-plan` artifacts. Other types
   (including all Discovery artifacts) ignore them.

@@ -10,8 +10,8 @@ template: "templates/project/project.md"
 # Skill: `ba.start-project`
 
 Agent-driven project initiation. The analyst MUST NOT have to run shell scripts themselves —
-you invoke the helper on their behalf. Follow `memory/ba-constitution.md` and
-`specs/001-ba-kit-framework/contracts/skill-contract.md` (§"Initiation Skills").
+you invoke the helper on their behalf. Follow `memory/ba-constitution.md`
+(§"Initiation skills").
 
 ## When invoked, you MUST
 

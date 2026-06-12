@@ -23,9 +23,8 @@ for human approval. It offers **two modes**:
 
 Both modes write the same `artifacts/requirements.md`, so either entry point slots into the
 workflow chain. Authored as agent-agnostic plain Markdown with the framework's standard
-front-matter — no agent-proprietary features. Follow `memory/ba-constitution.md`,
-`specs/001-ba-kit-framework/contracts/skill-contract.md`, and
-`specs/002-specify-skill/contracts/ba-specify.md`.
+front-matter — no agent-proprietary features. Follow `memory/ba-constitution.md`
+(see the §"Skill Behavioral Contract" and §"ba.specify obligations").
 
 ## Steps
 

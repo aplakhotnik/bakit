@@ -10,8 +10,7 @@ template: "templates/artifacts/confluence-page.md"
 # Skill: `ba.render-confluence`
 
 Render an approved artifact into a Confluence-ready Markdown file. **v1 produces local files
-only — no network/API calls.** Follow `memory/ba-constitution.md` and
-`specs/001-ba-kit-framework/contracts/skill-contract.md`.
+only — no network/API calls.** Follow `memory/ba-constitution.md`.
 
 ## Steps
 

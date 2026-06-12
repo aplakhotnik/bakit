@@ -10,8 +10,7 @@ template: "templates/task/kb-index.md"
 # Skill: `ba.start-task`
 
 Agent-driven task initiation. You invoke the helper on the analyst's behalf — no manual shell
-scripts. Follow `memory/ba-constitution.md` and
-`specs/001-ba-kit-framework/contracts/skill-contract.md` (§"Initiation Skills").
+scripts. Follow `memory/ba-constitution.md` (§"Initiation skills").
 
 ## When invoked, you MUST
 

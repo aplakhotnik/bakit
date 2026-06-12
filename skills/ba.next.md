@@ -10,8 +10,8 @@ template: "none"
 # Skill: `ba.next`
 
 On-demand workflow guidance. Read the workspace state and `workflow.md`, then tell the analyst
-exactly what to do next as a click-ready suggestion. Follow
-`specs/001-ba-kit-framework/contracts/skill-contract.md` (§"Next Steps Block").
+exactly what to do next as a click-ready suggestion. Follow `memory/ba-constitution.md`
+(§"Next steps" block shape).
 
 ## When invoked, you MUST
 

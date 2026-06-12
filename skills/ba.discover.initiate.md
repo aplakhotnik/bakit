@@ -15,8 +15,8 @@ required), it runs a **structured interview** and produces a **Project Charter &
 while creating the **Living Discovery Document** that persists across all four Discovery states.
 
 Authored as agent-agnostic plain Markdown with the framework's standard front-matter. Follow
-`memory/ba-constitution.md`, `specs/001-ba-kit-framework/contracts/skill-contract.md`, and
-`specs/004-discovery-agent-workflow/contracts/discovery-skills.md`.
+`memory/ba-constitution.md` (see §"Skill Behavioral Contract" and §"Discovery workflow
+obligations").
 
 > **Separate workflow.** This is **not** part of the default analyst chain and does not modify it.
 > The Discovery workflow is declared in `workflow-discovery.md`; advance it with `ba.discover.next`.

@@ -12,8 +12,7 @@ template: "none"
 On-demand guidance for the **Discovery** workflow (the separate four-state machine). Read the
 workspace state and **`workflow-discovery.md`** (never the default `workflow.md`), then tell the
 analyst exactly which Discovery state to run next as a ready-to-run suggestion. Follow
-`specs/001-ba-kit-framework/contracts/skill-contract.md` (§"Next Steps Block") and
-`specs/004-discovery-agent-workflow/contracts/discovery-skills.md`.
+`memory/ba-constitution.md` (§"Next steps" block shape and §"Discovery workflow obligations").
 
 ## When invoked, you MUST
 

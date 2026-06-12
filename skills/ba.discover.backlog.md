@@ -14,9 +14,8 @@ the identified gaps into actionable backlog items — **Epics, User Stories, and
 (with optional BDD/Gherkin) — and produces a **Product Backlog** where every item is traceable to a
 gap or elicited need.
 
-Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md`,
-`specs/001-ba-kit-framework/contracts/skill-contract.md`, and
-`specs/004-discovery-agent-workflow/contracts/discovery-skills.md`.
+Agent-agnostic plain Markdown. Follow `memory/ba-constitution.md` (see §"Skill Behavioral
+Contract" and §"Discovery workflow obligations").
 
 ## Steps
 
