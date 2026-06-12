@@ -89,7 +89,7 @@ function Bakit-ActiveValue {
 # Resolve the active project: explicit arg -> pointer -> most-recent dir.
 function Bakit-ResolveProject {
     param([string]$Arg = '')
-    if (-not [string]::IsNullOrEmpty($Arg)) { return $Arg }
+    if (-not [string]::IsNullOrEmpty($Arg)) { return (Bakit-Slugify $Arg) }
     $p = Bakit-ActiveValue 'project'
     if (-not [string]::IsNullOrEmpty($p) -and (Test-Path -LiteralPath (Bakit-ProjectDir $p))) { return $p }
     if (-not (Test-Path -LiteralPath $script:BakitWorkspace)) { return $null }
@@ -103,7 +103,7 @@ function Bakit-ResolveProject {
 function Bakit-ResolveTask {
     param([string]$Project, [string]$Arg = '')
     $tasksDir = (Join-Path (Bakit-ProjectDir $Project) 'tasks')
-    if (-not [string]::IsNullOrEmpty($Arg)) { return $Arg }
+    if (-not [string]::IsNullOrEmpty($Arg)) { return (Bakit-Slugify $Arg) }
     $t = Bakit-ActiveValue 'task'
     if (-not [string]::IsNullOrEmpty($t) -and (Test-Path -LiteralPath (Join-Path $tasksDir $t))) { return $t }
     if (-not (Test-Path -LiteralPath $tasksDir)) { return $null }

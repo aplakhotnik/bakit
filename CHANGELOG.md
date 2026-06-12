@@ -36,6 +36,11 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ### Fixed
 
+- Resolving a project or task by an explicit name now slugifies the argument, matching the
+  lowercase, slugified directory names created on disk. Previously an explicit name like `Demo`
+  resolved to a `Demo/` path that only existed on case-insensitive filesystems (macOS, Windows);
+  on case-sensitive filesystems (Linux) the lookup failed. Fixed in both the shell and PowerShell
+  helpers.
 - Removed dangling references to `specs/**/contracts/*.md` and `.specify/memory/constitution.md`
   across skills, templates, and contributor docs — those files are not part of the distributed
   package, so the references are now self-contained.

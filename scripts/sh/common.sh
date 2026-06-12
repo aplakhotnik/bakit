@@ -58,7 +58,7 @@ bakit_set_active() {
 
 # Resolve the active project: explicit arg -> pointer -> most-recent dir.
 bakit_resolve_project() {
-  if [ -n "${1:-}" ]; then printf '%s' "$1"; return 0; fi
+  if [ -n "${1:-}" ]; then printf '%s' "$(bakit_slugify "$1")"; return 0; fi
   if [ -f "$BAKIT_ACTIVE_FILE" ]; then
     _p=$(sed -n 's/^project=//p' "$BAKIT_ACTIVE_FILE")
     [ -n "$_p" ] && [ -d "$(bakit_project_dir "$_p")" ] && { printf '%s' "$_p"; return 0; }
@@ -74,7 +74,7 @@ bakit_resolve_project() {
 # Resolve the active task within a project: explicit arg -> pointer -> most-recent.
 bakit_resolve_task() {
   _proj="$1"; _tasks_dir="$(bakit_project_dir "$_proj")/tasks"
-  if [ -n "${2:-}" ]; then printf '%s' "$2"; return 0; fi
+  if [ -n "${2:-}" ]; then printf '%s' "$(bakit_slugify "$2")"; return 0; fi
   if [ -f "$BAKIT_ACTIVE_FILE" ]; then
     _t=$(sed -n 's/^task=//p' "$BAKIT_ACTIVE_FILE")
     [ -n "$_t" ] && [ -d "$_tasks_dir/$_t" ] && { printf '%s' "$_t"; return 0; }
