@@ -1,0 +1,35 @@
+# Changelog
+
+All notable changes to BA-Kit are documented here. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project aims to follow
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- **Documentation set** under `docs/`: [Getting started](docs/getting-started.md),
+  [Concepts & glossary](docs/concepts.md), [Working with the default workflow](docs/workflows.md),
+  the advanced [Discovery workflow](docs/discovery.md), and an [FAQ](docs/faq.md).
+- `CHANGELOG.md` (this file) and a `.gitignore` for installer-generated outputs and runtime
+  workspaces.
+- Gap-aware workflow (feature 007): structured open-question tracking with `open_questions` /
+  `blocking_questions` front-matter rollups, a `--require-no-blocking` validator flag, advisory
+  blocking-gap warnings in `ba.next` / `next-step`, decomposition-readiness summary in `ba.specify`,
+  carry-forward of open questions from analysis, and an optional clarify round in `ba.analyze-docs`.
+
+### Changed
+
+- **README** trimmed to a friendly overview that links into the new `docs/` set; the detailed
+  Discovery write-up moved to [docs/discovery.md](docs/discovery.md).
+- **`memory/ba-constitution.md`** is now self-contained: it folds in the Skill Behavioral Contract,
+  the "Next steps" block shape, initiation rules, the `ba.specify` obligations, and the Discovery
+  workflow obligations. Skills now reference only this file.
+
+### Fixed
+
+- Removed dangling references to `specs/**/contracts/*.md` and `.specify/memory/constitution.md`
+  across skills, templates, and contributor docs — those files are not part of the distributed
+  package, so the references are now self-contained.
+- Stopped shipping installer-generated outputs (`.github/prompts/`, `.vscode/settings.json`) that
+  duplicated `skills/` and risked drifting from the source of truth.
