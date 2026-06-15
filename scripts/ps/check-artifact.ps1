@@ -79,7 +79,17 @@ switch ($Type) {
     'gap-analysis'    { Require-Field 'derived_from' }
     'product-backlog' { Require-Field 'derived_from' }
     'estimated-backlog' { Require-Field 'derived_from' }
+    'story-map'       { Require-Field 'derived_from' }
     default           { Bakit-Warn "unknown artifact type '$Type' (continuing): $File" }
+}
+
+# 4b. story-map invariant: the body MUST declare exactly one "Selected variant" marker.
+if ($Type -eq 'story-map') {
+    $text = [System.IO.File]::ReadAllText($File)
+    $selCount = ([regex]::Matches($text, 'selected variant', 'IgnoreCase')).Count
+    if ($selCount -ne 1) {
+        Bakit-Die "story-map must mark exactly one 'Selected variant' (found $selCount): $File"
+    }
 }
 
 # 5. Approval gate.

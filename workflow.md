@@ -17,8 +17,9 @@ The default chain moves raw inputs toward a shared, review-ready deliverable:
 
 1. **`ba.analyze-docs`** — analyze existing documents into a `docs-analysis` artifact.
 2. **`ba.specify`** — turn a need or raw notes into a structured, testable `requirements` artifact (quick or deep mode).
-3. **`ba.write-stories`** — convert **approved** requirements into `user-stories`.
-4. **`ba.render-confluence`** — render an **approved** artifact into a Confluence-ready deliverable.
+3. **`ba.decompose`** *(optional, suggested)* — decompose **approved** requirements into a shape-aware `story-map` (backbone, prioritized slices, MVP/walking-skeleton, dependencies). Never blocks story writing.
+4. **`ba.write-stories`** — convert **approved** requirements into `user-stories` (consuming the story map when one exists).
+5. **`ba.render-confluence`** — render an **approved** artifact into a Confluence-ready deliverable.
 
 Each step that consumes another artifact is **gated on that artifact's `approved` status**
 (human-in-the-loop). A step whose gate is unmet is not advanced automatically; instead the
@@ -50,17 +51,20 @@ self-approve, silently escalate, or hard-block; the analyst always decides.
 
 The rows below are consumed by `next-step.sh`. Columns are pipe-delimited:
 
-`order | skill | produces | requires | gate`
+`order | skill | produces | requires | gate | optional`
 
 - `produces` — path (relative to the active task) of the artifact/deliverable the step creates.
 - `requires` — prerequisite artifact path, or `none`.
 - `gate` — required status of the prerequisite (`approved`), or `none`.
+- `optional` — `true` if the step may be skipped (suggested but never gating); **absent ⇒ `false`**.
+  `next-step.sh` tolerates legacy 5-field rows and treats them as `optional=false`.
 
 <!-- BAKIT-WORKFLOW-START -->
 ```
-1|ba.analyze-docs|artifacts/docs-analysis.md|none|none
-2|ba.specify|artifacts/requirements.md|none|none
-3|ba.write-stories|artifacts/user-stories.md|artifacts/requirements.md|approved
-4|ba.render-confluence|deliverables|artifacts/requirements.md|approved
+1|ba.analyze-docs|artifacts/docs-analysis.md|none|none|false
+2|ba.specify|artifacts/requirements.md|none|none|false
+3|ba.decompose|artifacts/story-map.md|artifacts/requirements.md|approved|true
+4|ba.write-stories|artifacts/user-stories.md|artifacts/requirements.md|approved|false
+5|ba.render-confluence|deliverables|artifacts/requirements.md|approved|false
 ```
 <!-- BAKIT-WORKFLOW-END -->

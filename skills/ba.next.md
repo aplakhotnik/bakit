@@ -37,6 +37,17 @@ exactly what to do next as a click-ready suggestion. Follow `memory/ba-constitut
    - ✎ Approve <artifact> first if it is still draft
    ```
 
+   When the resolver prints an **`Optional:`** line (a suggested-but-not-gating step such as
+   `ba.decompose`), relay it **alongside** the runnable next step — clearly labelled as optional and
+   skippable, **never** as a blocker. The analyst may run it or proceed straight to the required
+   step:
+
+   ```text
+   ## Next steps
+   - ◇ ba.decompose  — (optional) build a story map before writing stories; you may skip it
+   - ▶ ba.write-stories — convert approved requirements into user stories
+   ```
+
 4. **Stay advisory.** Never run a downstream skill automatically — present the option and let
    the analyst choose. If the knowledge base is empty or `workflow.md` is missing, say so plainly
    and suggest the most sensible manual next step instead of failing.

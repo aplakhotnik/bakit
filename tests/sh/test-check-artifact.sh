@@ -281,5 +281,90 @@ EOF
 # 20. Invalid artifact still exits 1 even with strict flag (counts not required).
 [ "$(run_check --require-no-blocking "$TMP/nofm.md")" = "1" ] && ok "invalid artifact exits 1 under strict mode" || no "invalid artifact exits 1 under strict mode"
 
+# --- 008: story-map type + single Selected-variant invariant ---
+
+# 21. Valid story-map with exactly one Selected variant passes.
+cat > "$TMP/sm-ok.md" <<'EOF'
+---
+id: SM-1
+type: story-map
+title: Valid story map
+status: draft
+created: 2026-06-15
+updated: 2026-06-15
+derived_from: [REQ-001]
+---
+# Story Map
+
+### Variant V1: walking skeleton — **Selected variant**
+| Slice | Pattern | Covers |
+|-------|---------|--------|
+| V1-S1 | Workflow/Path | FR-001 |
+EOF
+[ "$(run_check "$TMP/sm-ok.md")" = "0" ] && ok "story-map with one Selected variant passes" || no "story-map with one Selected variant passes"
+
+# 22. Zero Selected variants fails (exit 1).
+cat > "$TMP/sm-none.md" <<'EOF'
+---
+id: SM-2
+type: story-map
+title: No selection
+status: draft
+created: 2026-06-15
+updated: 2026-06-15
+derived_from: [REQ-001]
+---
+# Story Map
+
+### Variant V1: walking skeleton
+| Slice | Pattern | Covers |
+|-------|---------|--------|
+| V1-S1 | Workflow/Path | FR-001 |
+EOF
+[ "$(run_check "$TMP/sm-none.md")" = "1" ] && ok "story-map with zero Selected variants fails" || no "story-map with zero Selected variants fails"
+
+# 23. Two Selected variants fails (exit 1).
+cat > "$TMP/sm-two.md" <<'EOF'
+---
+id: SM-3
+type: story-map
+title: Double selection
+status: draft
+created: 2026-06-15
+updated: 2026-06-15
+derived_from: [REQ-001]
+---
+# Story Map
+
+### Variant V1: a — **Selected variant**
+### Variant V2: b — **Selected variant**
+EOF
+[ "$(run_check "$TMP/sm-two.md")" = "1" ] && ok "story-map with two Selected variants fails" || no "story-map with two Selected variants fails"
+
+# 24. Missing/empty derived_from fails.
+cat > "$TMP/sm-noderive.md" <<'EOF'
+---
+id: SM-4
+type: story-map
+title: No derived_from
+status: draft
+created: 2026-06-15
+updated: 2026-06-15
+derived_from: []
+---
+# Story Map
+
+### Variant V1: a — **Selected variant**
+EOF
+[ "$(run_check "$TMP/sm-noderive.md")" = "1" ] && ok "story-map without derived_from fails" || no "story-map without derived_from fails"
+
+# 25. Absent open/blocking rollups are treated as 0 (exit 0) and reported.
+out=$(run_check_out "$TMP/sm-ok.md")
+printf '%s' "$out" | grep -q '^open_questions: 0$' && ok "story-map absent rollups report 0" || no "story-map absent rollups report 0"
+[ "$(run_check "$TMP/sm-ok.md")" = "0" ] && ok "story-map absent rollups exit 0" || no "story-map absent rollups exit 0"
+
+# 26. Back-compat: existing requirements type still validates (Selected check does not apply).
+[ "$(run_check "$TMP/req.md")" = "0" ] && ok "non-story-map unaffected by Selected-variant check" || no "non-story-map unaffected by Selected-variant check"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

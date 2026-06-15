@@ -70,7 +70,10 @@ Full walkthrough with expected output: **[Getting started](docs/getting-started.
 - **Agent-agnostic BA skills** that produce structured Markdown artifacts:
   - `ba.specify` — a described *need* or raw notes → structured requirements (deep or quick mode).
   - `ba.analyze-docs` — existing documents → extracted requirements, gaps, open questions.
-  - `ba.write-stories` — approved requirements → user stories with acceptance criteria.
+  - `ba.decompose` *(optional)* — approved requirements → a shape-aware **story map** (backbone,
+    prioritized slices, MVP/walking-skeleton, dependencies). Suggested, never required.
+  - `ba.write-stories` — approved requirements → user stories with acceptance criteria (consuming
+    the story map when one exists).
   - `ba.render-confluence` — approved artifact → local Confluence-ready Markdown.
 - **Review gates & traceability** — every artifact carries `status: draft → approved` and provenance
   in YAML front-matter; nothing flows forward until you approve it.
@@ -86,8 +89,10 @@ See **[Working with the default workflow](docs/workflows.md)** for the day-to-da
 ## The workflows
 
 - **Default chain** (most BA work): `ba.analyze-docs → ba.specify → ba.write-stories →
-  ba.render-confluence`, declared in [`workflow.md`](workflow.md). `ba.next` reads this manifest plus
-  your current artifacts to tell you what's runnable now and which artifact must be approved first.
+  ba.render-confluence`, with an optional `ba.decompose` (story map) step suggested between
+  `ba.specify` and `ba.write-stories`. Declared in [`workflow.md`](workflow.md). `ba.next` reads this
+  manifest plus your current artifacts to tell you what's runnable now and which artifact must be
+  approved first.
 - **Discovery** (advanced, separate): a four-state consultative process declared in
   [`workflow-discovery.md`](workflow-discovery.md). It coexists with the default chain and never
   auto-triggers it. See **[docs/discovery.md](docs/discovery.md)**.

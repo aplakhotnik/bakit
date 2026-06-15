@@ -91,11 +91,21 @@ function Is-Produced {
     return (Test-Path -LiteralPath $path)
 }
 
+# Is a step's approval gate satisfied (no prerequisite, or prerequisite present + approved)?
+function Gate-Satisfied {
+    param([string]$Requires)
+    if ($Requires -eq 'none' -or [string]::IsNullOrEmpty($Requires)) { return $true }
+    $rp = (Join-Path $TaskDir $Requires)
+    if (-not (Test-Path -LiteralPath $rp)) { return $false }
+    return ((Check-Ec @('--require-approved', $rp)) -eq 0)
+}
+
 Bakit-Log "Project: $Project"
 Bakit-Log "Task:    $Task"
 Bakit-Log ''
 
 # Determine the furthest-progressed step (highest order whose output exists).
+# Rows carry a 6th `optional` field (008); legacy 5-field rows default to false.
 $lastDone = 0
 $maxOrder = 0
 foreach ($r in $rows) {
@@ -114,21 +124,47 @@ if ($lastDone -ge $maxOrder) {
     exit 0
 }
 
-$nextOrder = $lastDone + 1
-
-# Read the next step's row and evaluate its approval gate.
-$nextRow = ''
+# Ordered-row scan over the remaining rows (order > lastDone), ascending.
+# An optional step (optional=true) that is runnable now is surfaced as a
+# *suggested-but-not-gating* hint; the first required step (optional=false) is the
+# runnable "Next" step. Because the manifest uses consecutive integers but an
+# optional step may be skipped, we scan the ordered rows rather than doing a single
+# `lastDone + 1` exact-order lookup.
+$reqFields = $null
+$optionalSuggest = @()
 foreach ($r in $rows) {
     $f = $r.Split('|')
-    if ([int]$f[0] -eq $nextOrder) { $nextRow = $r; break }
+    if ($f.Count -lt 2) { continue }
+    $order = [int]$f[0]
+    if ($order -le $lastDone) { continue }
+    $opt = ''
+    if ($f.Count -ge 6) { $opt = ([string]$f[5]).Trim() }
+    $isOptional = ($opt -ieq 'true')
+    if ($isOptional) {
+        # Suggested-but-not-gating: surface only when its own gate is already satisfied,
+        # so it is never offered prematurely (before its prerequisite is approved).
+        if (Gate-Satisfied $f[3]) {
+            $optionalSuggest += "Optional: $($f[1]) — produces $($f[2]) (suggested; never required, you may skip it)"
+        }
+        continue
+    }
+    # First required remaining row: this is the runnable next step.
+    $reqFields = $f
+    break
 }
-if ([string]::IsNullOrEmpty($nextRow)) { Bakit-Log 'No further workflow steps defined.'; exit 0 }
 
-$fields = $nextRow.Split('|')
-$skill = $fields[1]
-$produces = $fields[2]
-$requires = $fields[3]
-$gate = $fields[4]
+# Surface any optional suggestions first (clearly labelled, never a blocker).
+foreach ($line in $optionalSuggest) { Bakit-Log $line }
+
+if ($null -eq $reqFields) {
+    Bakit-Log 'No further required workflow steps defined.'
+    exit 0
+}
+
+$skill = $reqFields[1]
+$produces = $reqFields[2]
+$requires = $reqFields[3]
+$gate = $reqFields[4]
 
 if ($requires -ne 'none' -and -not [string]::IsNullOrEmpty($requires)) {
     $reqPath = (Join-Path $TaskDir $requires)

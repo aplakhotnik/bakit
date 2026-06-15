@@ -6,6 +6,30 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ## [Unreleased]
 
+### Added
+
+- **`ba.decompose` skill** — an optional, suggested step between `ba.specify` and
+  `ba.write-stories` that turns approved requirements into a shape-aware **story map**: a backbone
+  of prioritized, INVEST-tested **slices** with an MVP/walking-skeleton, dependency notes, parallel
+  strategy **variants** (one *Selected*), gap harvesting, and a requirement-coverage check. Runs as
+  a resumable loop that remembers prior decisions.
+- **`story-map` artifact** — new [`templates/artifacts/story-map.md`](templates/artifacts/story-map.md)
+  with `derived_from`, coverage, variants, and session-state sections.
+- **Decomposition pattern catalogue** — [`docs/decomposition-patterns.md`](docs/decomposition-patterns.md)
+  documenting the solution-shape dimensions and named splitting patterns.
+- **Worked story-map example** in the `customer-feedback-portal` sample, plus updated docs
+  (`README`, `docs/workflows.md`, `docs/concepts.md`, `docs/getting-started.md`, `skills/README.md`).
+
+### Changed
+
+- **Workflow manifest** (`workflow.md`) gained an `optional` column; `ba.decompose` is declared as an
+  optional row. `next-step.sh` / `next-step.ps1` now surface optional steps as **suggestions** (never
+  gating) alongside the next runnable required step, and `ba.next` relays them as such.
+- **`ba.write-stories`** now consumes an approved story map's selected-variant slices when present,
+  and otherwise light-decomposes the requirements itself (no raw 1:1 dump).
+- **`check-artifact`** validates `story-map` artifacts: `derived_from` required and exactly one
+  *Selected variant* marker.
+
 ## [0.1.0] - 2026-06-12
 
 First public release.

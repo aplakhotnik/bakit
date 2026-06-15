@@ -31,7 +31,8 @@ customer-feedback-portal/
       ├─ artifacts/                   # everything the AI + analyst produced
       │  ├─ docs-analysis.md          # what was extracted from the inputs
       │  ├─ requirements.md           # the approved requirements (status: approved)
-      │  └─ user-stories.md           # INVEST stories derived from the requirements
+      │  ├─ story-map.md              # optional: shape-aware backbone of prioritized slices
+      │  └─ user-stories.md           # INVEST stories derived from the story map
       └─ deliverables/                # shareable outputs rendered from approved artifacts
          └─ feedback-intake-confluence.md  # Confluence-ready page rendered from the stories
 ```
@@ -46,11 +47,17 @@ customer-feedback-portal/
 3. See how `ba.specify` produced the approved
    [`requirements.md`](customer-feedback-portal/tasks/001-feedback-intake/artifacts/requirements.md),
    with every requirement traced back to a source.
-4. See how `ba.write-stories` produced
+4. See how the optional `ba.decompose` produced the approved
+   [`story-map.md`](customer-feedback-portal/tasks/001-feedback-intake/artifacts/story-map.md)
+   — a backbone of prioritized, INVEST-tested **slices** with an MVP/walking-skeleton, two
+   strategy **variants** (one *Selected*), and a coverage check that every requirement maps to a
+   slice. This step is **suggested, never required**.
+5. See how `ba.write-stories` produced
    [`user-stories.md`](customer-feedback-portal/tasks/001-feedback-intake/artifacts/user-stories.md)
-   from the **approved** requirements — with personas, a story map, and detailed
-   Given/When/Then acceptance criteria.
-5. See how `ba.render-confluence` turned the approved stories into a shareable
+   — INVEST stories with detailed Given/When/Then acceptance criteria, each traced to a requirement.
+   When an approved story map is present, `ba.write-stories` expands its **selected variant's
+   slices**; without one it light-decomposes the requirements directly (as this sample shows).
+6. See how `ba.render-confluence` turned the approved stories into a shareable
    [`feedback-intake-confluence.md`](customer-feedback-portal/tasks/001-feedback-intake/deliverables/feedback-intake-confluence.md)
    page — a **deliverable** rendered from the source artifact, which stays the
    source of record.

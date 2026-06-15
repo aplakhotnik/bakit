@@ -74,8 +74,18 @@ case "$TYPE" in
   requirements|elicitation-plan|project) : ;;
   discovery-document|project-charter) : ;;
   gap-analysis|product-backlog|estimated-backlog) require_field derived_from ;;
+  story-map)                 require_field derived_from ;;
   *) bakit_warn "unknown artifact type '$TYPE' (continuing): $FILE" ;;
 esac
+
+# 4b. story-map invariant: the body MUST declare exactly one "Selected variant" marker.
+if [ "$TYPE" = "story-map" ]; then
+  SEL_COUNT=$(grep -o -i 'selected variant' "$FILE" 2>/dev/null | wc -l | tr -d ' ')
+  case "$SEL_COUNT" in ''|*[!0-9]*) SEL_COUNT=0 ;; esac
+  if [ "$SEL_COUNT" -ne 1 ]; then
+    bakit_die "story-map must mark exactly one 'Selected variant' (found $SEL_COUNT): $FILE"
+  fi
+fi
 
 # 5. Approval gate.
 if [ "$REQUIRE_APPROVED" -eq 1 ] && [ "$STATUS" != "approved" ]; then

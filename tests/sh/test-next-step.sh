@@ -152,5 +152,50 @@ out6=$(nextout "Demo" "004-gap-aware")
 printf '%s' "$out6" | grep -qi 'gate not met' \
   && ok "draft+blocking: approval gate shown (unchanged)" || no "draft+blocking: approval gate shown (unchanged)"
 
+# --- 008: optional, suggested-but-not-gating ba.decompose step ---
+
+sh "$SCRIPTS/init-task.sh" "Demo" "Decompose Opt" >/dev/null 2>&1
+TASK5="$BAKIT_WORKSPACE/demo/tasks/005-decompose-opt"
+
+# O1. Approved requirements + no story-map -> suggest optional ba.decompose AND offer write-stories.
+mkart "$TASK5/artifacts/requirements.md" requirements approved
+out7=$(nextout "Demo" "005-decompose-opt")
+printf '%s' "$out7" | grep -qi 'optional: ba.decompose' \
+  && ok "optional: suggests ba.decompose" || no "optional: suggests ba.decompose"
+printf '%s' "$out7" | grep -q 'Next: ba.write-stories' \
+  && ok "optional: still offers write-stories as runnable" || no "optional: still offers write-stories as runnable"
+_ec=0; sh "$SCRIPTS/next-step.sh" "Demo" "005-decompose-opt" >/dev/null 2>&1 || _ec=$?
+[ "$_ec" = "0" ] && ok "optional: exit 0 (runnable step offered)" || no "optional: exit 0 (runnable step offered)"
+
+# O2. Story-map present -> advance past the optional step to write-stories (no optional suggestion).
+mkart "$TASK5/artifacts/story-map.md" story-map draft "derived_from: [test-requirements]
+---
+### Variant V1: walking skeleton — **Selected variant**"
+out8=$(nextout "Demo" "005-decompose-opt")
+printf '%s' "$out8" | grep -q 'Next: ba.write-stories' \
+  && ok "optional: map present advances to write-stories" || no "optional: map present advances to write-stories"
+printf '%s' "$out8" | grep -qi 'optional: ba.decompose' \
+  && no "optional: should NOT re-suggest decompose once map exists" || ok "optional: decompose not re-suggested once produced"
+
+# O3. Earlier required step incomplete (no requirements yet) -> optional not surfaced early.
+sh "$SCRIPTS/init-task.sh" "Demo" "Early Opt" >/dev/null 2>&1
+TASK6="$BAKIT_WORKSPACE/demo/tasks/006-early-opt"
+mkart "$TASK6/artifacts/docs-analysis.md" docs-analysis draft "sources: [inputs/a.txt]"
+out9=$(nextout "Demo" "006-early-opt")
+printf '%s' "$out9" | grep -q 'Next: ba.specify' \
+  && ok "optional: early state advances to specify" || no "optional: early state advances to specify"
+printf '%s' "$out9" | grep -qi 'optional: ba.decompose' \
+  && no "optional: decompose not surfaced before requirements" || ok "optional: decompose not surfaced prematurely"
+
+# O4. Draft requirements -> optional not surfaced (gate unmet), write-stories gate message unchanged.
+sh "$SCRIPTS/init-task.sh" "Demo" "Draft Opt" >/dev/null 2>&1
+TASK7="$BAKIT_WORKSPACE/demo/tasks/007-draft-opt"
+mkart "$TASK7/artifacts/requirements.md" requirements draft
+out10=$(nextout "Demo" "007-draft-opt")
+printf '%s' "$out10" | grep -qi 'gate not met' \
+  && ok "optional: draft requirements -> gate not met (write-stories)" || no "optional: draft requirements -> gate not met (write-stories)"
+printf '%s' "$out10" | grep -qi 'optional: ba.decompose' \
+  && no "optional: decompose not surfaced when its gate unmet" || ok "optional: decompose suppressed when gate unmet"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

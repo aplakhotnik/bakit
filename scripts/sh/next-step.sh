@@ -74,6 +74,15 @@ is_produced() {
   [ -f "$_path" ]
 }
 
+# Is a step's approval gate satisfied (no prerequisite, or prerequisite present + approved)?
+gate_satisfied() {
+  _req="$1"
+  if [ "$_req" = "none" ] || [ -z "$_req" ]; then return 0; fi
+  _rp="$TASK_DIR/$_req"
+  [ -f "$_rp" ] || return 1
+  [ "$(check_ec --require-approved "$_rp")" = "0" ]
+}
+
 bakit_log "Project: $PROJECT"
 bakit_log "Task:    $TASK"
 bakit_log ""
@@ -81,9 +90,10 @@ bakit_log ""
 # Determine the furthest-progressed step (highest order whose output exists).
 # Steps earlier in the chain may be intentionally skipped (e.g. analyze-docs),
 # so the next action is the step *after* the furthest one already produced.
+# Rows carry a 6th `optional` field (008); legacy 5-field rows default to false.
 LAST_DONE=0
 MAX_ORDER=0
-while IFS='|' read -r order skill produces requires gate; do
+while IFS='|' read -r order skill produces requires gate optional; do
   [ -n "$order" ] || continue
   [ "$order" -gt "$MAX_ORDER" ] && MAX_ORDER="$order"
   if is_produced "$produces"; then
@@ -99,16 +109,50 @@ if [ "$LAST_DONE" -ge "$MAX_ORDER" ]; then
   exit 0
 fi
 
-NEXT_ORDER=$((LAST_DONE + 1))
+# Ordered-row scan over the remaining rows (order > LAST_DONE), ascending.
+# An optional step (optional=true) that is runnable now is surfaced as a
+# *suggested-but-not-gating* hint; the first required step (optional=false) is the
+# runnable "Next" step. Because the manifest uses consecutive integers but an
+# optional step may be skipped, we scan the ordered rows rather than doing a single
+# `LAST_DONE + 1` exact-order lookup.
+REQ_ROW=""
+OPTIONAL_SUGGEST=""
+while IFS='|' read -r order skill produces requires gate optional; do
+  [ -n "$order" ] || continue
+  [ "$order" -gt "$LAST_DONE" ] || continue
+  case "$optional" in true|TRUE|True) optional=true ;; *) optional=false ;; esac
+  if [ "$optional" = "true" ]; then
+    # Suggested-but-not-gating: surface only when its own gate is already satisfied,
+    # so it is never offered prematurely (before its prerequisite is approved).
+    if gate_satisfied "$requires"; then
+      OPTIONAL_SUGGEST="${OPTIONAL_SUGGEST}Optional: $skill — produces $produces (suggested; never required, you may skip it)
+"
+    fi
+    continue
+  fi
+  # First required remaining row: this is the runnable next step.
+  REQ_ROW="$order|$skill|$produces|$requires|$gate"
+  break
+done <<EOF
+$ROWS
+EOF
 
-# Read the next step's row and evaluate its approval gate.
-NEXT_ROW=$(printf '%s\n' "$ROWS" | awk -F'|' -v o="$NEXT_ORDER" '$1==o { print; exit }')
-[ -n "$NEXT_ROW" ] || { bakit_log "No further workflow steps defined."; exit 0; }
+# Surface any optional suggestions first (clearly labelled, never a blocker).
+if [ -n "$OPTIONAL_SUGGEST" ]; then
+  printf '%s' "$OPTIONAL_SUGGEST" | while IFS= read -r _line; do
+    [ -n "$_line" ] && bakit_log "$_line"
+  done
+fi
 
-skill=$(printf '%s' "$NEXT_ROW" | cut -d'|' -f2)
-produces=$(printf '%s' "$NEXT_ROW" | cut -d'|' -f3)
-requires=$(printf '%s' "$NEXT_ROW" | cut -d'|' -f4)
-gate=$(printf '%s' "$NEXT_ROW" | cut -d'|' -f5)
+if [ -z "$REQ_ROW" ]; then
+  bakit_log "No further required workflow steps defined."
+  exit 0
+fi
+
+skill=$(printf '%s' "$REQ_ROW" | cut -d'|' -f2)
+produces=$(printf '%s' "$REQ_ROW" | cut -d'|' -f3)
+requires=$(printf '%s' "$REQ_ROW" | cut -d'|' -f4)
+gate=$(printf '%s' "$REQ_ROW" | cut -d'|' -f5)
 
 if [ "$requires" != "none" ] && [ -n "$requires" ]; then
   req_path="$TASK_DIR/$requires"

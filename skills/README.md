@@ -29,6 +29,7 @@ shell scripts by hand:
 |-------|----------|--------------|
 | `ba.specify` | `artifacts/requirements.md` (+ `artifacts/elicitation-plan.md` in deep mode) | none |
 | `ba.analyze-docs` | `artifacts/docs-analysis.md` | none |
+| `ba.decompose` *(optional)* | `artifacts/story-map.md` | approved `requirements.md` |
 | `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
 | `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
 
@@ -61,6 +62,14 @@ the default chain and never auto-triggers it.
 The ordered chain and per-step approval gates live in [`../workflow.md`](../workflow.md) — the
 single source of truth that `ba.next` / `next-step.sh` and every skill's **Next steps** block
 are derived from.
+
+> **Optional decomposition (`ba.decompose`).** Between `ba.specify` and `ba.write-stories` you may
+> run `ba.decompose` to turn approved requirements into a `story-map` — a shape-aware backbone of
+> prioritized, INVEST-tested **slices** with an MVP/walking-skeleton, dependency notes, parallel
+> strategy **variants** (one *Selected*), gap harvesting, and a coverage check. It is **suggested,
+> never gating**: `next-step` offers it alongside the runnable `ba.write-stories`, which consumes the
+> approved map when present and otherwise light-decomposes the requirements itself. The named
+> splitting patterns it uses are catalogued in [`../docs/decomposition-patterns.md`](../docs/decomposition-patterns.md).
 
 > **Gap-aware advisories (non-blocking).** Artifacts can carry an `open_questions` /
 > `blocking_questions` rollup (backed by a structured `## Open Questions` table). `ba.specify`

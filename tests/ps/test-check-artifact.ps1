@@ -141,6 +141,36 @@ try {
 
     # 20. Invalid artifact still exits 1 even with strict flag.
     if ((Run-Check @('--require-no-blocking', $nofm)) -eq 1) { Ok 'invalid artifact exits 1 under strict mode' } else { No 'invalid artifact exits 1 under strict mode' }
+
+    # --- 008: story-map type + single Selected-variant invariant ---
+
+    # 21. Valid story-map with exactly one Selected variant passes.
+    $smOk = (Join-Path $TMP 'sm-ok.md')
+    Write-Art $smOk "---`nid: SM-1`ntype: story-map`ntitle: Valid story map`nstatus: draft`ncreated: 2026-06-15`nupdated: 2026-06-15`nderived_from: [REQ-001]`n---`n# Story Map`n`n### Variant V1: walking skeleton — **Selected variant**`n| Slice | Pattern | Covers |`n|-------|---------|--------|`n| V1-S1 | Workflow/Path | FR-001 |`n"
+    if ((Run-Check @($smOk)) -eq 0) { Ok 'story-map with one Selected variant passes' } else { No 'story-map with one Selected variant passes' }
+
+    # 22. Zero Selected variants fails (exit 1).
+    $smNone = (Join-Path $TMP 'sm-none.md')
+    Write-Art $smNone "---`nid: SM-2`ntype: story-map`ntitle: No selection`nstatus: draft`ncreated: 2026-06-15`nupdated: 2026-06-15`nderived_from: [REQ-001]`n---`n# Story Map`n`n### Variant V1: walking skeleton`n| Slice | Pattern | Covers |`n|-------|---------|--------|`n| V1-S1 | Workflow/Path | FR-001 |`n"
+    if ((Run-Check @($smNone)) -eq 1) { Ok 'story-map with zero Selected variants fails' } else { No 'story-map with zero Selected variants fails' }
+
+    # 23. Two Selected variants fails (exit 1).
+    $smTwo = (Join-Path $TMP 'sm-two.md')
+    Write-Art $smTwo "---`nid: SM-3`ntype: story-map`ntitle: Double selection`nstatus: draft`ncreated: 2026-06-15`nupdated: 2026-06-15`nderived_from: [REQ-001]`n---`n# Story Map`n`n### Variant V1: a — **Selected variant**`n### Variant V2: b — **Selected variant**`n"
+    if ((Run-Check @($smTwo)) -eq 1) { Ok 'story-map with two Selected variants fails' } else { No 'story-map with two Selected variants fails' }
+
+    # 24. Missing/empty derived_from fails.
+    $smNoDerive = (Join-Path $TMP 'sm-noderive.md')
+    Write-Art $smNoDerive "---`nid: SM-4`ntype: story-map`ntitle: No derived_from`nstatus: draft`ncreated: 2026-06-15`nupdated: 2026-06-15`nderived_from: []`n---`n# Story Map`n`n### Variant V1: a — **Selected variant**`n"
+    if ((Run-Check @($smNoDerive)) -eq 1) { Ok 'story-map without derived_from fails' } else { No 'story-map without derived_from fails' }
+
+    # 25. Absent open/blocking rollups are treated as 0 (exit 0) and reported.
+    $smOut = (Run-CheckOut @($smOk)) -join "`n"
+    if ($smOut -match '(?m)^open_questions: 0$') { Ok 'story-map absent rollups report 0' } else { No 'story-map absent rollups report 0' }
+    if ((Run-Check @($smOk)) -eq 0) { Ok 'story-map absent rollups exit 0' } else { No 'story-map absent rollups exit 0' }
+
+    # 26. Back-compat: existing requirements type still validates (Selected check does not apply).
+    if ((Run-Check @($req)) -eq 0) { Ok 'non-story-map unaffected by Selected-variant check' } else { No 'non-story-map unaffected by Selected-variant check' }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

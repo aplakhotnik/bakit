@@ -137,6 +137,41 @@ try {
     Mk-Art (Join-Path $TASK4 'artifacts/requirements.md') 'requirements' 'draft' "open_questions: 1`nblocking_questions: 1"
     $out6 = Next-Out @('Demo', '004-gap-aware')
     if ($out6 -match 'gate not met') { Ok 'draft+blocking: approval gate shown (unchanged)' } else { No 'draft+blocking: approval gate shown (unchanged)' }
+
+    # --- 008: optional, suggested-but-not-gating ba.decompose step ---
+
+    & $INIT_TASK 'Demo' 'Decompose Opt' 2>$null 1>$null
+    $TASK5 = (Join-Path $WS 'demo/tasks/005-decompose-opt')
+
+    # O1. Approved requirements + no story-map -> suggest optional ba.decompose AND offer write-stories.
+    Mk-Art (Join-Path $TASK5 'artifacts/requirements.md') 'requirements' 'approved'
+    $out7 = Next-Out @('Demo', '005-decompose-opt')
+    if ($out7 -match 'Optional: ba\.decompose') { Ok 'optional: suggests ba.decompose' } else { No 'optional: suggests ba.decompose' }
+    if ($out7 -match 'Next: ba\.write-stories') { Ok 'optional: still offers write-stories as runnable' } else { No 'optional: still offers write-stories as runnable' }
+    & $NEXT 'Demo' '005-decompose-opt' 2>$null 1>$null
+    if ($LASTEXITCODE -eq 0) { Ok 'optional: exit 0 (runnable step offered)' } else { No 'optional: exit 0 (runnable step offered)' }
+
+    # O2. Story-map present -> advance past the optional step to write-stories (no optional suggestion).
+    Mk-Art (Join-Path $TASK5 'artifacts/story-map.md') 'story-map' 'draft' "derived_from: [test-requirements]`n---`n### Variant V1: walking skeleton — **Selected variant**"
+    $out8 = Next-Out @('Demo', '005-decompose-opt')
+    if ($out8 -match 'Next: ba\.write-stories') { Ok 'optional: map present advances to write-stories' } else { No 'optional: map present advances to write-stories' }
+    if ($out8 -match 'Optional: ba\.decompose') { No 'optional: should NOT re-suggest decompose once map exists' } else { Ok 'optional: decompose not re-suggested once produced' }
+
+    # O3. Earlier required step incomplete (no requirements yet) -> optional not surfaced early.
+    & $INIT_TASK 'Demo' 'Early Opt' 2>$null 1>$null
+    $TASK6 = (Join-Path $WS 'demo/tasks/006-early-opt')
+    Mk-Art (Join-Path $TASK6 'artifacts/docs-analysis.md') 'docs-analysis' 'draft' 'sources: [inputs/a.txt]'
+    $out9 = Next-Out @('Demo', '006-early-opt')
+    if ($out9 -match 'Next: ba\.specify') { Ok 'optional: early state advances to specify' } else { No 'optional: early state advances to specify' }
+    if ($out9 -match 'Optional: ba\.decompose') { No 'optional: decompose not surfaced before requirements' } else { Ok 'optional: decompose not surfaced prematurely' }
+
+    # O4. Draft requirements -> optional not surfaced (gate unmet), write-stories gate message unchanged.
+    & $INIT_TASK 'Demo' 'Draft Opt' 2>$null 1>$null
+    $TASK7 = (Join-Path $WS 'demo/tasks/007-draft-opt')
+    Mk-Art (Join-Path $TASK7 'artifacts/requirements.md') 'requirements' 'draft'
+    $out10 = Next-Out @('Demo', '007-draft-opt')
+    if ($out10 -match 'gate not met') { Ok 'optional: draft requirements -> gate not met (write-stories)' } else { No 'optional: draft requirements -> gate not met (write-stories)' }
+    if ($out10 -match 'Optional: ba\.decompose') { No 'optional: decompose not surfaced when its gate unmet' } else { Ok 'optional: decompose suppressed when gate unmet' }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

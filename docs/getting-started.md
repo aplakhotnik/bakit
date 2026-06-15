@@ -118,6 +118,9 @@ The assistant grounds itself in your context, asks targeted clarifying questions
 top line `status: draft` to `status: approved`. That approval is what unlocks the next step.
 
 **Step 7 — Go further (optional).** Run `/ba.next` again to be guided to:
+- `/ba.decompose` — *(optional, suggested)* turn approved requirements into a **story map** (a
+  backbone of prioritized slices with an MVP/walking-skeleton). You can skip it; `ba.write-stories`
+  works with or without a map.
 - `/ba.write-stories` — turn approved requirements into user stories, and/or
 - `/ba.render-confluence` — render an approved artifact into a Confluence-ready page.
 

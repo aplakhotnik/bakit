@@ -10,10 +10,10 @@ user stories and a Confluence-ready page. It's deliberately simple and linear.
 ## The flow at a glance
 
 ```text
-ba.start-project → ba.start-task → (add inputs) → ba.analyze-docs → ba.specify → ba.write-stories → ba.render-confluence
-       │                │                              │                │              │                    │
-   project +        task +                      extract from      structured      user stories        shareable
-   context          context                     documents         requirements    + criteria          deliverable
+ba.start-project → ba.start-task → (add inputs) → ba.analyze-docs → ba.specify → (ba.decompose) → ba.write-stories → ba.render-confluence
+       │                │                              │                │            │              │                    │
+   project +        task +                      extract from      structured    story map      user stories        shareable
+   context          context                     documents         requirements  (optional)     + criteria          deliverable
 ```
 
 Each arrow is **review-gated**: a step that consumes an earlier artifact won't proceed until you've
@@ -85,6 +85,25 @@ downstream steps.
 > **Tip:** if `ba.specify` notes there are still *blocking* open questions, you can either resolve
 > them now or consciously proceed — `ba.next` will remind you, but it never forces you.
 
+## Step 5b — Decompose into a story map (optional, suggested)
+
+```text
+/ba.decompose
+```
+
+With an **approved** `requirements.md`, this optional step produces `artifacts/story-map.md`: a
+shape-aware **backbone** of prioritized, independently testable **slices**, an explicit **MVP /
+walking-skeleton**, dependency notes, and a coverage check that every requirement maps to at least
+one slice. It characterizes the *solution shape* and names a **splitting pattern** for each slice
+(see [decomposition patterns](decomposition-patterns.md)), can evaluate **parallel strategy
+variants** in one map (with a single *Selected variant*), and runs as a **resumable loop** that
+remembers your decisions.
+
+It is **suggested, never required** — `ba.next` will offer it, but you can skip straight to
+`ba.write-stories`. When a map exists and is approved, `ba.write-stories` expands its selected
+variant's slices into stories; when it doesn't, `ba.write-stories` still light-decomposes the
+requirements itself. Review `story-map.md`, edit, and set `status: approved` when ready.
+
 ## Step 6 — Write user stories (optional)
 
 ```text
@@ -92,7 +111,10 @@ downstream steps.
 ```
 
 With an **approved** `requirements.md`, this produces `artifacts/user-stories.md`: well-formed user
-stories with acceptance criteria, each traceable back to a requirement. Review and approve as usual.
+stories with acceptance criteria, each traceable back to a requirement. If an **approved**
+`story-map.md` exists, the stories expand its **selected variant's slices** and trace to the map;
+otherwise they are light-decomposed straight from the requirements (never a raw 1:1 dump). Review
+and approve as usual.
 
 ## Step 7 — Render a deliverable (optional)
 
