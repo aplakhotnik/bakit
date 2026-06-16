@@ -81,6 +81,26 @@ printf 'stale\n' > "$SKILLS/ba.next/scripts/ps/zombie.ps1"
 [ ! -f "$SKILLS/ba.next/scripts/ps/zombie.ps1" ] && ok "idempotent: stale bundled file removed on re-run" || no "idempotent: stale bundled file removed on re-run"
 [ -f "$SKILLS/ba.next/SKILL.md" ] && ok "idempotent: SKILL.md still present after re-run" || no "idempotent: SKILL.md still present after re-run"
 
+# --- T-5: tuned Antigravity bundle backed up before rebuild (feature 009) ---
+# A locally edited SKILL.md and a tuned bundled script must be preserved under
+# .bakit-backup/<ts>/ before the folder is rebuilt (FR-007, FR-018).
+T5="$TMP/t5-antigravity"
+mkdir -p "$T5"
+( cd "$T5" && sh "$INSTALL" --agent antigravity >/dev/null 2>&1 )
+printf '\nLOCAL-EDIT\n' >> "$T5/.agents/skills/ba.next/SKILL.md"
+printf '\n# local change\n' >> "$T5/.agents/skills/ba.next/scripts/sh/next-step.sh"
+set +e
+t5out=$( cd "$T5" && BAKIT_BACKUP_TS=20200106T000000Z sh "$INSTALL" --agent antigravity 2>&1 )
+set -e
+BSMD="$T5/.bakit-backup/20200106T000000Z/.agents/skills/ba.next/SKILL.md"
+BSH="$T5/.bakit-backup/20200106T000000Z/.agents/skills/ba.next/scripts/sh/next-step.sh"
+if [ -f "$BSMD" ] && grep -q 'LOCAL-EDIT' "$BSMD" \
+   && [ -f "$BSH" ] && grep -q '# local change' "$BSH" \
+   && printf '%s' "$t5out" | grep -q 'backed-up: ba.next' \
+   && ! grep -q 'LOCAL-EDIT' "$T5/.agents/skills/ba.next/SKILL.md"; then
+  ok "T-5: tuned Antigravity bundle backed up before rebuild"
+else no "T-5: tuned Antigravity bundle backed up before rebuild"; fi
+
 # --- global scope ----------------------------------------------------------
 GH="$TMP/home"
 mkdir -p "$GH"

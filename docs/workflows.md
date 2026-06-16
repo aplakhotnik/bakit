@@ -160,6 +160,11 @@ tasks/001-elicit-requirements/
 
 All plain Markdown, all reviewable in git over time.
 
+> **Taking a BA-Kit update?** Upgrading the package and re-running the installer never touches this
+> workspace — your inputs, artifacts, and deliverables are yours. Any installed command you tuned is
+> backed up before it's replaced. Preview first with `./install.sh --check` (or `.\install.ps1
+> -Check`); see **[Getting started → Upgrading BA-Kit](getting-started.md#upgrading-ba-kit)**.
+
 ---
 
 Next: the per-skill reference in **[skills/README.md](../skills/README.md)**, or the advanced

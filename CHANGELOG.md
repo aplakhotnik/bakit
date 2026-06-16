@@ -6,8 +6,32 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-16
+
 ### Added
 
+- **Safe upgrade & backup experience** — re-running the installer now upgrades the **whole package**
+  without ever silently overwriting work. Before replacing any installed `ba.*` command (flat-file)
+  or Antigravity bundle whose content you tuned, the installer copies the existing file **verbatim**
+  into a timestamped `.bakit-backup/<YYYYMMDDTHHMMSSZ>/` folder at the workspace root, mirroring the
+  install path, then writes the new version live. Identical files are skipped, and no backup folder
+  is created when nothing was tuned. Fail-safe: if the backup location is unwritable, the run aborts
+  rather than overwrite.
+- **Pre-upgrade preview & `--check` / `-Check` dry-run** — every run prints a concise preview of what
+  will change first; the dry-run flag previews only and writes nothing (no command files, no backup
+  folder, no `.gitignore` edit). Reports **"safe to upgrade"** when nothing differs, otherwise lists
+  exactly which files differ and will be backed up.
+- **Idempotent change report** — each run prints a per-command summary categorizing every command as
+  `added` / `updated` / `unchanged` / `backed-up` (a differing file is reported as `backed-up`,
+  counted in exactly one category), plus the backup count and folder location.
+- **Stale-command surfacing** — installed `ba.*` commands matching no current package skill are
+  reported as `stale` and never auto-deleted, so renamed or custom commands are never lost.
+- **`.gitignore` enforcement** — `.bakit-backup/` is appended to `.gitignore` once, only when a
+  backup is actually made.
+- **Upgrade & restore documentation** — new "Upgrading BA-Kit" sections in the
+  [README](README.md#upgrading-ba-kit) and [Getting started](docs/getting-started.md#upgrading-ba-kit)
+  guide (clone-flow and download-flow, preview/dry-run, backup layout, copy-back restore steps), plus
+  FAQ entries in [docs/faq.md](docs/faq.md). Mirrored sh + ps backup/preview/stale test coverage.
 - **`ba.decompose` skill** — an optional, suggested step between `ba.specify` and
   `ba.write-stories` that turns approved requirements into a shape-aware **story map**: a backbone
   of prioritized, INVEST-tested **slices** with an MVP/walking-skeleton, dependency notes, parallel
@@ -22,6 +46,9 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ### Changed
 
+- **Installer parity** — `install.sh` and `install.ps1` were refactored to a shared two-pass
+  (preview → install) flow with byte-for-byte content comparison (CRLF-normalized), keeping the two
+  installers behaviorally identical (FR-020).
 - **Workflow manifest** (`workflow.md`) gained an `optional` column; `ba.decompose` is declared as an
   optional row. `next-step.sh` / `next-step.ps1` now surface optional steps as **suggestions** (never
   gating) alongside the next runnable required step, and `ba.next` relays them as such.

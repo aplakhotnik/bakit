@@ -95,6 +95,32 @@ try {
     if (-not (Test-Path (Join-Path $SKILLS 'ba.next/scripts/ps/zombie.ps1'))) { Ok 'idempotent: stale bundled file removed on re-run' } else { No 'idempotent: stale bundled file removed on re-run' }
     if (Test-Path $SKM) { Ok 'idempotent: SKILL.md still present after re-run' } else { No 'idempotent: SKILL.md still present after re-run' }
 
+    # --- T-5: tuned Antigravity bundle backed up before rebuild (feature 009)
+    # A locally edited SKILL.md and a tuned bundled script must be preserved
+    # under .bakit-backup/<ts>/ before the folder is rebuilt (FR-007, FR-018).
+    $T5 = (Join-Path $TMP 't5')
+    New-Item -ItemType Directory -Force -Path $T5 | Out-Null
+    Run-Install $T5 @{ Agent = 'antigravity' } | Out-Null
+    Add-Content -LiteralPath (Join-Path $T5 '.agents/skills/ba.next/SKILL.md') -Value 'LOCAL-EDIT'
+    Add-Content -LiteralPath (Join-Path $T5 '.agents/skills/ba.next/scripts/sh/next-step.sh') -Value '# local change'
+    Push-Location $T5
+    $oldTs = $env:BAKIT_BACKUP_TS; $oldPwd = $env:PWD
+    $env:BAKIT_BACKUP_TS = '20200106T000000Z'; $env:PWD = $T5
+    try { $t5out = & pwsh -NoProfile -File (Join-Path $BAKIT_HOME 'install.ps1') -Agent antigravity 2>&1 | Out-String }
+    finally {
+        if ($null -ne $oldTs) { $env:BAKIT_BACKUP_TS = $oldTs } else { Remove-Item Env:BAKIT_BACKUP_TS -ErrorAction SilentlyContinue }
+        if ($null -ne $oldPwd) { $env:PWD = $oldPwd } else { Remove-Item Env:PWD -ErrorAction SilentlyContinue }
+        Pop-Location
+    }
+    $bSmd = (Join-Path $T5 '.bakit-backup/20200106T000000Z/.agents/skills/ba.next/SKILL.md')
+    $bSh = (Join-Path $T5 '.bakit-backup/20200106T000000Z/.agents/skills/ba.next/scripts/sh/next-step.sh')
+    if ((Test-Path $bSmd) -and ((Get-Content -Raw $bSmd) -match 'LOCAL-EDIT') `
+        -and (Test-Path $bSh) -and ((Get-Content -Raw $bSh) -match '# local change') `
+        -and ($t5out -match 'backed-up: ba\.next') `
+        -and (-not ((Get-Content -Raw (Join-Path $T5 '.agents/skills/ba.next/SKILL.md')) -match 'LOCAL-EDIT'))) {
+        Ok 'T-5: tuned Antigravity bundle backed up before rebuild'
+    } else { No 'T-5: tuned Antigravity bundle backed up before rebuild' }
+
     # --- global scope ------------------------------------------------------
     $GH = (Join-Path $TMP 'home')
     New-Item -ItemType Directory -Force -Path $GH | Out-Null

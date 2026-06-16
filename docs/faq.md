@@ -29,6 +29,40 @@ installer again with a different `--agent` flag. Re-running is always safe and i
 **Do I need internet access?** Only to `git clone` the repo. The installer and all skills make no
 network calls.
 
+## Upgrading & backups
+
+**How do I preview an upgrade before changing anything?** Run the installer with the dry-run flag —
+`./install.sh --check` (macOS/Linux) or `.\install.ps1 -Check` (Windows). It prints the same preview
+a normal run shows but writes **nothing**: no command files, no backup folder, no `.gitignore` edit.
+If nothing you installed differs, it reports **"safe to upgrade"**; otherwise it lists exactly which
+files differ and will be backed up.
+
+**What does "tuned" mean?** A *tuned* command is an installed `ba.*` file whose content you edited so
+it no longer matches what the current package would generate. The installer compares content (ignoring
+line-ending differences), so re-running with no edits reports everything as `unchanged` and creates no
+backup.
+
+**Where are my customizations backed up?** Into a timestamped folder at your workspace root:
+`.bakit-backup/<YYYYMMDDTHHMMSSZ>/`, with your tuned file copied verbatim under its **mirrored install
+path** (e.g. `.bakit-backup/20250101T120000Z/.github/prompts/ba.next.prompt.md`). The end-of-run
+report shows how many files were backed up and the folder location. `.bakit-backup/` is git-ignored
+automatically. No backup folder is created when nothing was tuned.
+
+**How do I restore a backed-up command?** Copy it back from the mirrored path inside the timestamped
+folder to its install location, e.g.:
+
+```sh
+cp .bakit-backup/20250101T120000Z/.github/prompts/ba.next.prompt.md .github/prompts/ba.next.prompt.md
+```
+
+**The report lists a command as `stale` — what is that?** An installed `ba.*` command that no longer
+matches any skill in the current package (often a renamed skill or one you created). It's surfaced so
+you notice it, but **never auto-deleted**, so your work is never lost.
+
+**The installer aborted saying it couldn't write the backup.** That's the fail-safe: if the backup
+location isn't writable, the installer refuses to overwrite anything so your tuned files stay intact.
+Fix the permissions (or clear the blocker at `.bakit-backup/`) and re-run.
+
 ## Using the workflow
 
 **What's the difference between an artifact and a deliverable?** An *artifact* (e.g.

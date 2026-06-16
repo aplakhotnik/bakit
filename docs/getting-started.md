@@ -127,6 +127,56 @@ top line `status: draft` to `status: approved`. That approval is what unlocks th
 That's the whole loop. For a fuller narrative of how to work day to day, see
 **[Working with the default workflow](workflows.md)**.
 
+## Upgrading BA-Kit
+
+When a newer BA-Kit comes out, you upgrade the **whole package** and re-run the installer. Re-running
+is always safe: your project folders and any installed command you hand-tuned are **backed up before**
+they are replaced — nothing you changed is silently overwritten.
+
+**1. Preview what will change (recommended).** Every install run prints a short preview first. To see
+it *without writing anything*, add the dry-run flag:
+
+```sh
+./install.sh --check          # macOS / Linux
+.\install.ps1 -Check          # Windows (PowerShell 7+)
+```
+
+If nothing you installed differs from the new package, you'll see **"safe to upgrade"**. Otherwise
+the preview lists exactly which files differ and will be backed up.
+
+**2. Get the newer package.**
+
+- **Cloned the repo?** `cd bakit && git pull`.
+- **Downloaded a copy?** Replace your old `bakit/` folder with the new one.
+
+**3. Re-run the installer** (`./install.sh` or `.\install.ps1`). The end-of-run report tells you what
+was `added` / `updated` / `unchanged` / `backed-up`, how many files were backed up, and where.
+
+### Where backups go, and how to restore
+
+If the installer is about to overwrite a command you tuned, it first copies the existing file —
+verbatim — into a timestamped folder at your workspace root, then writes the new version live:
+
+```text
+.bakit-backup/
+└── 20250101T120000Z/                     # UTC run timestamp (colon-free)
+    └── .github/prompts/ba.next.prompt.md  # your tuned copy, mirrored install path
+```
+
+For Antigravity installs the backup mirrors the bundle path (e.g.
+`.bakit-backup/<timestamp>/.agents/skills/ba.next/SKILL.md`). `.bakit-backup/` is added to your
+`.gitignore` automatically.
+
+**To restore a tuned command**, copy it back from the mirrored path inside the timestamped folder to
+its install location:
+
+```sh
+cp .bakit-backup/20250101T120000Z/.github/prompts/ba.next.prompt.md .github/prompts/ba.next.prompt.md
+```
+
+> Installed `ba.*` commands that no longer match any package skill are reported as **stale** — they
+> are surfaced in the report but never auto-deleted, so a renamed or custom command is never lost.
+
 ## Prefer the terminal?
 
 Every scaffolding step is also available as a script, if you'd rather:

@@ -4,7 +4,7 @@
 > installer, then drive everything from inside your AI assistant.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-informational.svg)](CHANGELOG.md)
 [![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-blue.svg)](#supported-environments)
 [![Agents](https://img.shields.io/badge/agents-Copilot%20%7C%20Claude%20%7C%20Cursor%20%7C%20Antigravity-7952b3.svg)](#supported-environments)
 
@@ -114,6 +114,56 @@ exit codes, and byte-identical output).
 The install locations are **generated** from `skills/` and are git-ignored — edit the source under
 `skills/` and re-run the installer. For the interactive menu, flags (`--agent`, `--scope global`),
 and auto-detection precedence, run `./install.sh --help` (or `.\install.ps1 -Help`); details are in
+**[Getting started](docs/getting-started.md)** and the **[FAQ](docs/faq.md)**.
+
+## Upgrading BA-Kit
+
+BA-Kit upgrades the **whole package** — you take a newer `bakit/` and re-run the installer. Your own
+work is never touched: project folders, task inputs/artifacts/deliverables, and any installed command
+you hand-tuned are **backed up before** they are replaced (never silently overwritten).
+
+**Preview first (recommended).** Every run starts with a short preview of what will change. To see
+that preview *without writing anything*, use the dry-run flag:
+
+```sh
+./install.sh --check          # macOS / Linux — preview only, makes no changes
+.\install.ps1 -Check          # Windows (PowerShell 7+)
+```
+
+If nothing you installed differs from the new package, the preview reports **"safe to upgrade"**.
+Otherwise it lists exactly which files differ and will be backed up.
+
+**Clone flow** (you cloned the repo):
+
+```sh
+cd bakit
+git pull                      # get the newer package
+./install.sh                  # re-run the installer (or .\install.ps1)
+```
+
+**Download flow** (you downloaded a copy): replace your old `bakit/` folder with the new one, then
+re-run the installer from inside it.
+
+### Backups & restore
+
+When the installer is about to overwrite a command you tuned, it first copies the existing file —
+verbatim — into a timestamped backup folder at the workspace root, then writes the new version live:
+
+```text
+.bakit-backup/
+└── 20250101T120000Z/                     # UTC run timestamp (colon-free)
+    └── .github/prompts/ba.next.prompt.md  # your tuned copy, mirrored install path
+```
+
+The end-of-run report tells you how many files were backed up and the folder location. `.bakit-backup/`
+is added to your `.gitignore` automatically. **To restore**, copy the file back from the mirrored path
+inside the timestamped folder to its install location, e.g.:
+
+```sh
+cp .bakit-backup/20250101T120000Z/.github/prompts/ba.next.prompt.md .github/prompts/ba.next.prompt.md
+```
+
+More detail (including the Antigravity bundle layout and stale-command surfacing) is in
 **[Getting started](docs/getting-started.md)** and the **[FAQ](docs/faq.md)**.
 
 ## Project layout

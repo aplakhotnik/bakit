@@ -19,6 +19,16 @@ AGENT=""
 DEST=""
 SCOPE=""
 
+# Upgrade/backup state (feature 009).
+CHECK_MODE=0        # 1 = dry-run preview only, make no changes (--check)
+RESOLVED=""         # newline list of resolved targets: key|scope|dest
+MODIFIED=""         # newline list of install-relative paths that differ (preview)
+REPORT=""           # newline list of change-report rows: class|label|name
+BACKUP_DIR=""       # lazily-created per-run backup folder (absolute)
+BACKUP_ROOT=""      # root under which .bakit-backup/ lives
+BACKUP_COUNT=0      # number of files backed up this run
+LABEL=""            # human label of the target currently being scanned
+
 log()  { printf '%s\n' "$*"; }
 warn() { printf 'warning: %s\n' "$*" >&2; }
 die()  { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -40,6 +50,8 @@ Options:
   --scope <s>     Antigravity only: 'workspace' (default; ./.agents/skills/) or
                   'global' (~/.gemini/config/skills/). Ignored for other agents.
   --dest <dir>    Override the destination directory (flat-file agents).
+  --check         Dry-run: print the pre-upgrade preview only and make no
+                  changes (no files written, no backups, no .gitignore edits).
   -h, --help      Show this help and exit.
 
 With no --agent and a terminal, a guided multi-select menu is shown. With no
@@ -53,6 +65,7 @@ while [ $# -gt 0 ]; do
     --agent) AGENT="${2:-}"; shift 2 ;;
     --scope) SCOPE="${2:-}"; shift 2 ;;
     --dest)  DEST="${2:-}"; shift 2 ;;
+    --check) CHECK_MODE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) die "unknown argument: $1 (try --help)" ;;
   esac
@@ -105,9 +118,11 @@ preselected_agents() {
 # ---------------------------------------------------------------------------
 # 1. Make helper + test scripts executable.
 # ---------------------------------------------------------------------------
-log "Making BA-Kit scripts executable..."
-chmod +x "$BAKIT_HOME"/scripts/sh/*.sh 2>/dev/null || true
-chmod +x "$BAKIT_HOME"/tests/sh/*.sh 2>/dev/null || true
+if [ "$CHECK_MODE" != 1 ]; then
+  log "Making BA-Kit scripts executable..."
+  chmod +x "$BAKIT_HOME"/scripts/sh/*.sh 2>/dev/null || true
+  chmod +x "$BAKIT_HOME"/tests/sh/*.sh 2>/dev/null || true
+fi
 
 # ---------------------------------------------------------------------------
 # Skill front-matter helpers (for Antigravity SKILL.md generation).
@@ -123,18 +138,115 @@ first_sentence() { # text on stdin -> first sentence (fallback description)
 }
 
 # ---------------------------------------------------------------------------
-# Flat-file install (copilot / claude / cursor / generic).
+# Upgrade/backup helpers (feature 009).
 # ---------------------------------------------------------------------------
-install_flat() { # dest ext
-  _dest="$1"; _ext="$2"
-  mkdir -p "$_dest"
-  log "Installing BA skills into: $_dest"
+
+# Content comparison, CRLF-normalized. same_content <installed> <source|->
+# With '-' the would-write content is read from stdin. Returns 0 when EQUAL,
+# 1 when they differ (or the installed file is absent).
+same_content() {
+  _inst="$1"; _src="$2"
+  [ -f "$_inst" ] || return 1
+  _na=$(mktemp 2>/dev/null || mktemp -t bakit)
+  _nb=$(mktemp 2>/dev/null || mktemp -t bakit)
+  tr -d '\r' < "$_inst" > "$_na"
+  if [ "$_src" = "-" ]; then tr -d '\r' > "$_nb"; else tr -d '\r' < "$_src" > "$_nb"; fi
+  if cmp -s "$_na" "$_nb"; then _eq=0; else _eq=1; fi
+  rm -f "$_na" "$_nb"
+  return $_eq
+}
+
+# Install-relative path of <path> under <root> (mirrors install layout in backups).
+relpath() { # root path
+  case "$2" in
+    "$1"/*) printf '%s' "${2#"$1"/}" ;;
+    *) printf '%s' "$2" | sed 's#^/##' ;;
+  esac
+}
+
+# Idempotently ensure .bakit-backup/ is git-ignored in the workspace root.
+ensure_gitignore() { # root
+  _gi="$1/.gitignore"
+  if [ -f "$_gi" ]; then
+    if grep -qxF '.bakit-backup/' "$_gi" 2>/dev/null; then return 0; fi
+    printf '%s\n' '.bakit-backup/' >> "$_gi" 2>/dev/null || true
+  else
+    printf '%s\n' '.bakit-backup/' > "$_gi" 2>/dev/null || true
+  fi
+}
+
+# Lazily create the single per-run backup folder under <root>/.bakit-backup/.
+# Uses a colon-free UTC timestamp; appends -2/-3/... on collision. Fail-safe:
+# aborts (without overwriting) if the folder cannot be created.
+ensure_backup_dir() { # root
+  _root="$1"
+  [ -n "$BACKUP_DIR" ] && return 0
+  _ts=${BAKIT_BACKUP_TS:-$(date -u +%Y%m%dT%H%M%SZ)}
+  _cand="$_root/.bakit-backup/$_ts"
+  _n=2
+  while [ -e "$_cand" ]; do _cand="$_root/.bakit-backup/$_ts-$_n"; _n=$((_n+1)); done
+  mkdir -p "$_cand" 2>/dev/null || die "cannot create backup directory under $_root/.bakit-backup (aborting without overwriting tuned files)"
+  BACKUP_DIR="$_cand"; BACKUP_ROOT="$_root"
+  ensure_gitignore "$_root"
+}
+
+# Back up an existing installed file (verbatim) before it is overwritten/removed.
+backup_file() { # root install_path
+  _root="$1"; _path="$2"
+  ensure_backup_dir "$_root"
+  _rel=$(relpath "$_root" "$_path")
+  _dst="$BACKUP_DIR/$_rel"
+  mkdir -p "$(dirname "$_dst")" 2>/dev/null || die "cannot create backup path: $_dst"
+  cp "$_path" "$_dst" || die "cannot back up $_path"
+  BACKUP_COUNT=$((BACKUP_COUNT+1))
+}
+
+record()       { REPORT="${REPORT}$1|$2|$3
+"; }              # class|label|name
+note_modified() { MODIFIED="${MODIFIED}$1
+"; }                # install-relative path
+
+# ---------------------------------------------------------------------------
+# Flat-file install (copilot / claude / cursor / generic).
+#   mode = preview (compare only, no writes) | install (back up + write)
+# ---------------------------------------------------------------------------
+install_flat() { # mode dest ext
+  _mode="$1"; _dest="$2"; _ext="$3"
+  _root="$PWD"
+  if [ "$_mode" != preview ]; then
+    mkdir -p "$_dest"
+    log "Installing BA skills into: $_dest"
+  fi
   for skill in "$SKILLS_DIR"/ba.*.md; do
     [ -e "$skill" ] || continue
     base=$(basename "$skill" .md)
-    cp "$skill" "$_dest/$base$_ext"
+    target="$_dest/$base$_ext"
+    if [ ! -e "$target" ]; then
+      cls=added
+    elif same_content "$target" "$skill"; then
+      cls=unchanged
+    else
+      cls=backed-up
+    fi
+    if [ "$_mode" = preview ]; then
+      [ "$cls" = backed-up ] && note_modified "$(relpath "$_root" "$target")"
+      continue
+    fi
+    [ "$cls" = backed-up ] && backup_file "$_root" "$target"
+    cp "$skill" "$target"
+    record "$cls" "$LABEL" "$base"
     log "  + $base$_ext"
   done
+  [ "$_mode" = preview ] && return 0
+  # Stale detection: installed ba.* commands matching no current package skill.
+  if [ -d "$_dest" ]; then
+    for inst in "$_dest"/ba.*; do
+      [ -e "$inst" ] || continue
+      ibase=$(basename "$inst")
+      sk="${ibase%"$_ext"}"
+      [ -f "$SKILLS_DIR/$sk.md" ] || record stale "$LABEL" "$sk"
+    done
+  fi
   case "$_dest" in
     */.github/prompts)
       ws_root="${_dest%/.github/prompts}"
@@ -161,36 +273,90 @@ antigravity_skills_dir() { # scope -> base skills directory
   esac
 }
 
-install_antigravity() { # scope
-  _scope="$1"
+install_antigravity() { # mode scope
+  _mode="$1"; _scope="$2"
   _base=$(antigravity_skills_dir "$_scope")
-  mkdir -p "$_base"
-  log "Installing BA skills (Antigravity, $_scope) into: $_base"
+  if [ "$_scope" = global ]; then _root="$HOME/.gemini/config"; else _root="$PWD"; fi
+  if [ "$_mode" != preview ]; then
+    mkdir -p "$_base"
+    log "Installing BA skills (Antigravity, $_scope) into: $_base"
+  fi
   for skill in "$SKILLS_DIR"/ba.*.md; do
     [ -e "$skill" ] || continue
     name=$(basename "$skill" .md)
     folder="$_base/$name"
-    # Idempotent reconciliation: rebuild the folder so no stale files remain.
-    rm -rf "$folder"
-    mkdir -p "$folder"
 
     desc=$(skill_summary "$skill")
     if [ -z "$desc" ]; then desc=$(skill_body "$skill" | first_sentence); fi
     # Escape any double quotes for safe YAML embedding.
     esc_desc=$(printf '%s' "$desc" | sed 's/"/\\"/g')
-    {
-      printf '%s\n' '---'
-      printf 'name: %s\n' "$name"
-      printf 'description: "%s"\n' "$esc_desc"
-      printf '%s\n' '---'
-      skill_body "$skill"
-    } > "$folder/SKILL.md"
+    # Would-write SKILL.md content (captured so preview, compare, and write all
+    # use byte-identical content).
+    gen=$(printf '%s\n' '---'; printf 'name: %s\n' "$name"; printf 'description: "%s"\n' "$esc_desc"; printf '%s\n' '---'; skill_body "$skill")
 
-    # Bundle referenced helper scripts + templates (verbatim) so the folder is
-    # self-contained even when installed globally.
+    # Referenced helper scripts + templates (verbatim).
     sh_refs=$(grep -oE 'scripts/sh/[A-Za-z0-9._-]+\.sh' "$skill" 2>/dev/null | sort -u || true)
     ps_refs=$(grep -oE 'scripts/ps/[A-Za-z0-9._-]+\.ps1' "$skill" 2>/dev/null | sort -u || true)
     tpl_refs=$(grep -oE 'templates/[A-Za-z0-9._/-]+\.md' "$skill" 2>/dev/null | sort -u || true)
+
+    existed=0; [ -d "$folder" ] && existed=1
+    tuned=0
+
+    # Compare + back up the existing SKILL.md and any bundled files BEFORE the
+    # folder is rebuilt, so tuned content is never silently lost.
+    smd="$folder/SKILL.md"
+    if [ -e "$smd" ]; then
+      if printf '%s\n' "$gen" | same_content "$smd" -; then :; else
+        tuned=1
+        if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$smd")"; else backup_file "$_root" "$smd"; fi
+      fi
+    fi
+    for r in $sh_refs; do
+      bf="$folder/scripts/sh/$(basename "$r")"
+      if [ -e "$bf" ] && [ -f "$BAKIT_HOME/$r" ]; then
+        if same_content "$bf" "$BAKIT_HOME/$r"; then :; else
+          tuned=1
+          if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$bf")"; else backup_file "$_root" "$bf"; fi
+        fi
+      fi
+    done
+    if [ -n "$sh_refs" ] && [ -e "$folder/scripts/sh/common.sh" ] && [ -f "$BAKIT_HOME/scripts/sh/common.sh" ]; then
+      if same_content "$folder/scripts/sh/common.sh" "$BAKIT_HOME/scripts/sh/common.sh"; then :; else
+        tuned=1
+        if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$folder/scripts/sh/common.sh")"; else backup_file "$_root" "$folder/scripts/sh/common.sh"; fi
+      fi
+    fi
+    for r in $ps_refs; do
+      bf="$folder/scripts/ps/$(basename "$r")"
+      if [ -e "$bf" ] && [ -f "$BAKIT_HOME/$r" ]; then
+        if same_content "$bf" "$BAKIT_HOME/$r"; then :; else
+          tuned=1
+          if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$bf")"; else backup_file "$_root" "$bf"; fi
+        fi
+      fi
+    done
+    if [ -n "$ps_refs" ] && [ -e "$folder/scripts/ps/common.ps1" ] && [ -f "$BAKIT_HOME/scripts/ps/common.ps1" ]; then
+      if same_content "$folder/scripts/ps/common.ps1" "$BAKIT_HOME/scripts/ps/common.ps1"; then :; else
+        tuned=1
+        if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$folder/scripts/ps/common.ps1")"; else backup_file "$_root" "$folder/scripts/ps/common.ps1"; fi
+      fi
+    fi
+    for r in $tpl_refs; do
+      bf="$folder/resources/$r"
+      if [ -e "$bf" ] && [ -f "$BAKIT_HOME/$r" ]; then
+        if same_content "$bf" "$BAKIT_HOME/$r"; then :; else
+          tuned=1
+          if [ "$_mode" = preview ]; then note_modified "$(relpath "$_root" "$bf")"; else backup_file "$_root" "$bf"; fi
+        fi
+      fi
+    done
+
+    if [ "$_mode" = preview ]; then continue; fi
+
+    # Idempotent reconciliation: rebuild the folder so no stale files remain.
+    rm -rf "$folder"
+    mkdir -p "$folder"
+    printf '%s\n' "$gen" > "$folder/SKILL.md"
 
     if [ -n "$sh_refs" ]; then
       mkdir -p "$folder/scripts/sh"
@@ -214,6 +380,8 @@ install_antigravity() { # scope
         fi
       done
     fi
+    if [ "$existed" -eq 0 ]; then cls=added; elif [ "$tuned" -eq 1 ]; then cls=backed-up; else cls=unchanged; fi
+    record "$cls" "$LABEL" "$name"
     log "  + $name/ (SKILL.md${sh_refs:+, scripts/sh}${ps_refs:+, scripts/ps}${tpl_refs:+, resources})"
   done
 }
@@ -225,23 +393,80 @@ SUMMARY=""
 add_summary() { SUMMARY="${SUMMARY}$1
 "; }
 
-install_target() { # key [scope]
-  key="$1"; scope="${2:-workspace}"
-  layout=$(agent_layout "$key")
-  if [ "$layout" = "skill-folder" ]; then
-    install_antigravity "$scope"
-    loc=$(antigravity_skills_dir "$scope")
-    add_summary "Installed for $(agent_label "$key") ($scope): $loc/  -> open the workspace in Antigravity and invoke a skill, e.g. ba.start-project"
-  else
-    # Destination: explicit --dest overrides; else table dest under PWD.
-    if [ -n "$DEST" ]; then dst="$DEST"; else dst="$PWD/$(agent_dest "$key")"; fi
-    case "$dst" in */.github/prompts) ext=".prompt.md" ;; *) ext=$(agent_ext "$key") ;; esac
-    install_flat "$dst" "$ext"
-    if [ "$key" = "copilot" ]; then
-      add_summary "Installed for $(agent_label "$key"): $dst/  -> reload VS Code, then type / in Copilot Chat, e.g. /ba.start-project"
+# Collect a resolved target for the two-pass (preview then install) run.
+add_resolved() { RESOLVED="${RESOLVED}$1|$2|$3
+"; }                          # key|scope|dest
+
+# Scan a single resolved target in the given mode (preview|install).
+scan_one() { # mode key scope dest
+  _m="$1"; key="$2"; scope="${3:-workspace}"; dest="$4"
+  if [ -n "$key" ]; then
+    LABEL=$(agent_label "$key")
+    layout=$(agent_layout "$key")
+    if [ "$layout" = "skill-folder" ]; then
+      install_antigravity "$_m" "$scope"
+      if [ "$_m" = install ]; then
+        loc=$(antigravity_skills_dir "$scope")
+        add_summary "Installed for $LABEL ($scope): $loc/  -> open the workspace in Antigravity and invoke a skill, e.g. ba.start-project"
+      fi
     else
-      add_summary "Installed for $(agent_label "$key"): $dst/  -> open the workspace in your agent and invoke a skill, e.g. /ba.start-project"
+      if [ -n "$dest" ]; then dst="$dest"; else dst="$PWD/$(agent_dest "$key")"; fi
+      case "$dst" in */.github/prompts) ext=".prompt.md" ;; *) ext=$(agent_ext "$key") ;; esac
+      install_flat "$_m" "$dst" "$ext"
+      if [ "$_m" = install ]; then
+        if [ "$key" = "copilot" ]; then
+          add_summary "Installed for $LABEL: $dst/  -> reload VS Code, then type / in Copilot Chat, e.g. /ba.start-project"
+        else
+          add_summary "Installed for $LABEL: $dst/  -> open the workspace in your agent and invoke a skill, e.g. /ba.start-project"
+        fi
+      fi
     fi
+  else
+    # Bare --dest (no agent): flat-file install to the given directory.
+    LABEL="BA skills"
+    case "$dest" in */.github/prompts) ext=".prompt.md" ;; *) ext=".md" ;; esac
+    install_flat "$_m" "$dest" "$ext"
+    if [ "$_m" = install ]; then add_summary "Installed BA skills into: $dest/"; fi
+  fi
+}
+
+# Iterate all resolved targets in one mode (here-doc keeps state in this shell).
+run_pass() { # mode
+  _pm="$1"
+  while IFS='|' read -r _k _s _d; do
+    [ -n "$_k$_d" ] || continue
+    scan_one "$_pm" "$_k" "$_s" "$_d"
+  done <<EOF
+$RESOLVED
+EOF
+}
+
+# Print the pre-upgrade preview (safe vs. list of files that will be backed up).
+print_preview() {
+  log "Pre-upgrade preview:"
+  if [ -z "$MODIFIED" ]; then
+    log "  Safe to upgrade — no local modifications detected. Nothing will be backed up."
+  else
+    log "  Local modifications detected — these files differ from the package version"
+    log "  and will be backed up before upgrade:"
+    printf '%s' "$MODIFIED" | while IFS= read -r f; do [ -n "$f" ] && log "    - $f"; done
+    log "  Backups will be written under: .bakit-backup/<timestamp>/"
+  fi
+  log ""
+}
+
+# Print the end-of-run change report (every command in exactly one category).
+print_report() {
+  [ -n "$REPORT" ] || return 0
+  log ""
+  log "Change report:"
+  printf '%s' "$REPORT" | while IFS='|' read -r c l n; do
+    [ -n "$c" ] || continue
+    log "  $c: $n ($l)"
+  done
+  if [ "$BACKUP_COUNT" -gt 0 ]; then
+    log ""
+    log "Backed up $BACKUP_COUNT file(s) to: $BACKUP_DIR"
   fi
 }
 
@@ -316,12 +541,10 @@ run_menu() { # reads from $MENU_IN; sets SELECTED (space-separated keys) + SCOPE
 
 if [ -n "$AGENT" ]; then
   valid_agent "$AGENT" || die "unknown agent: $AGENT (try --help)"
-  install_target "$AGENT" "${SCOPE:-workspace}"
+  add_resolved "$AGENT" "${SCOPE:-workspace}" ""
 elif [ -n "$DEST" ]; then
   # Bare --dest (no agent): flat-file install to the given directory.
-  case "$DEST" in */.github/prompts) ext=".prompt.md" ;; *) ext=".md" ;; esac
-  install_flat "$DEST" "$ext"
-  add_summary "Installed BA skills into: $DEST/"
+  add_resolved "" "${SCOPE:-workspace}" "$DEST"
 else
   # No agent flag: interactive menu (TTY or forced) else auto-detect fallback.
   MENU_IN=""
@@ -330,12 +553,12 @@ else
   fi
   if [ -n "$MENU_IN" ]; then
     run_menu
-    for k in $SELECTED; do install_target "$k" "${SCOPE:-workspace}"; done
+    for k in $SELECTED; do add_resolved "$k" "${SCOPE:-workspace}" ""; done
   else
     # Non-interactive fallback: single-pick auto-detect (workspace markers).
     first=$(detect_agents | awk '{print $1}')
     if [ -n "$first" ]; then
-      install_target "$first" "${SCOPE:-workspace}"
+      add_resolved "$first" "${SCOPE:-workspace}" ""
     else
       warn "Could not auto-detect an agent directory."
       log ""
@@ -351,11 +574,23 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Pre-upgrade preview (always), then dry-run exit or real install.
+# ---------------------------------------------------------------------------
+run_pass preview
+print_preview
+if [ "$CHECK_MODE" = 1 ]; then
+  log "Dry-run (--check): no changes were made."
+  exit 0
+fi
+run_pass install
+
+# ---------------------------------------------------------------------------
 # Summary.
 # ---------------------------------------------------------------------------
 log ""
 log "BA-Kit installed."
 printf '%s' "$SUMMARY" | while IFS= read -r line; do [ -n "$line" ] && log "  $line"; done
+print_report
 log ""
 log "Get started — invoke these skills in your agent:"
 log "  ba.start-project   # scaffolds a project workspace + shared kb/"
