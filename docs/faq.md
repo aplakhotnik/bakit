@@ -29,6 +29,19 @@ installer again with a different `--agent` flag. Re-running is always safe and i
 **Do I need internet access?** Only to `git clone` the repo. The installer and all skills make no
 network calls.
 
+**I don't have git yet. Can I still start?** Yes. Install git first, then clone BA-Kit:
+
+- macOS: run `xcode-select --install`
+- Windows: install Git for Windows from https://git-scm.com/download/win
+- Linux: install from your distro package manager (for example, `sudo apt install git`)
+
+Then run:
+
+```sh
+git clone https://github.com/aplakhotnik/bakit.git
+cd bakit
+```
+
 ## Upgrading & backups
 
 **How do I preview an upgrade before changing anything?** Run the installer with the dry-run flag —

@@ -29,6 +29,18 @@ BA-Kit follows a small set of non-negotiable principles (see
 
 ## Development setup
 
+### Prerequisites
+
+- `git`
+- POSIX shell (`sh`) for `tests/sh/*`
+- PowerShell 7+ (`pwsh`) for `tests/ps/*`
+
+If you do not have `git` yet:
+
+- macOS: `xcode-select --install`
+- Windows: install Git for Windows from https://git-scm.com/download/win
+- Linux: install from your distro package manager (for example, `sudo apt install git`)
+
 No build step and no network access are required. Clone the repository and run
 the test suites:
 

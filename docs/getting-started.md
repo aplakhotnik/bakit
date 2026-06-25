@@ -10,14 +10,25 @@ Here's the whole flow in a few seconds — slashing between the BA skills from i
 
 ![BA-Kit skills demo: moving through start-project, start-task, analyze-docs, specify, and render-confluence](assets/skill_demo.gif)
 
-## 1. Prerequisites
+## 1. Prerequisites (fresh machine)
 
-- **git** — to download BA-Kit.
-- One supported AI assistant: **VS Code (GitHub Copilot)**, **Claude**, **Cursor**, or
-  **Antigravity**.
-- A terminal:
-  - **macOS / Linux** — the built-in Terminal app.
-  - **Windows** — [PowerShell 7+](https://learn.microsoft.com/powershell/) (`pwsh`).
+If you are starting from scratch, install these first:
+
+- **git** (required to clone BA-Kit)
+  - macOS: run `xcode-select --install`
+  - Windows: install Git for Windows from https://git-scm.com/download/win
+  - Linux: install from your distro package manager (for example, `sudo apt install git`)
+- **IDE/assistant** (focus first on one or both of these)
+  - **VS Code + GitHub Copilot**
+    - Install Visual Studio Code
+    - Install the GitHub Copilot extension in VS Code
+    - Sign in to GitHub in VS Code so Copilot Chat is available
+  - **Antigravity IDE**
+    - Install Antigravity IDE
+    - Complete first-launch/sign-in so local skills can be detected
+- **Terminal**
+  - **macOS / Linux** — built-in Terminal
+  - **Windows** — [PowerShell 7+](https://learn.microsoft.com/powershell/) (`pwsh`)
 
 No build step or internet access is needed beyond the initial download — the installer only copies
 files.
@@ -29,24 +40,50 @@ git clone https://github.com/aplakhotnik/bakit.git
 cd bakit
 ```
 
-## 3. Run the installer (one time)
+## 3. Run the installer (VS Code + Antigravity first)
 
-This connects the BA skills to your AI assistant so you can call them as `/` commands.
+This connects BA skills to your assistant as `/` commands.
 
-**macOS / Linux:**
+### Option A: VS Code (Copilot)
+
+**macOS / Linux**
 
 ```sh
-./install.sh
+./install.sh --agent copilot
 ```
 
-**Windows (PowerShell 7+):**
+**Windows (PowerShell 7+)**
 
 ```powershell
-.\install.ps1
+.\install.ps1 -Agent copilot
 ```
 
-You'll see a simple menu. The assistants already detected in your folder are pre-ticked — type the
-number(s) you want, press Enter, and confirm:
+After install in VS Code:
+
+- Reload window: Command Palette -> `Developer: Reload Window`
+- Trust folder if prompted
+- In Copilot Chat type `/` and confirm commands like `ba.start-project`
+
+### Option B: Antigravity IDE
+
+Workspace scope (recommended when starting):
+
+```sh
+./install.sh --agent antigravity --scope workspace
+# .\install.ps1 -Agent antigravity -Scope workspace
+```
+
+Global scope (all projects on this machine):
+
+```sh
+./install.sh --agent antigravity --scope global
+# .\install.ps1 -Agent antigravity -Scope global
+```
+
+### Option C: Interactive menu (if you prefer selecting by number)
+
+Run without `--agent` / `-Agent` to open the menu. The assistants already detected in your folder
+are pre-ticked. Type number(s), press Enter, then confirm:
 
 ```text
 Select the agent(s) / IDE(s) to install BA-Kit for.
@@ -65,6 +102,12 @@ Re-running the installer later is always safe.
 > **VS Code (Copilot) first run:** after installing, reload the window
 > (Command Palette → *Developer: Reload Window*) and **trust the folder** if prompted, so the new
 > `/ba.*` commands appear in Copilot Chat. See the [FAQ](faq.md) if they don't show up.
+
+### Quick install checks
+
+- VS Code install: `.github/prompts/ba.start-project.prompt.md` exists
+- Antigravity workspace install: `.agents/skills/ba.start-project/SKILL.md` exists
+- Antigravity global install: `~/.gemini/config/skills/ba.start-project/SKILL.md` exists
 
 The exact install location per assistant and the auto-detection rules are listed in the
 [main README](../README.md#supported-environments).
