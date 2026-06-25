@@ -10,28 +10,13 @@ Here's the whole flow in a few seconds — slashing between the BA skills from i
 
 ![BA-Kit skills demo: moving through start-project, start-task, analyze-docs, specify, and render-confluence](assets/skill_demo.gif)
 
-## 1. Prerequisites (fresh machine)
+## 1. Prerequisites
 
-If you are starting from scratch, install these first:
+- **git**
+- One supported assistant/IDE (this guide focuses on VS Code Copilot and Antigravity)
+- Terminal (`sh` on macOS/Linux, PowerShell 7+ on Windows)
 
-- **git** (required to clone BA-Kit)
-  - macOS: run `xcode-select --install`
-  - Windows: install Git for Windows from https://git-scm.com/download/win
-  - Linux: install from your distro package manager (for example, `sudo apt install git`)
-- **IDE/assistant** (focus first on one or both of these)
-  - **VS Code + GitHub Copilot**
-    - Install Visual Studio Code
-    - Install the GitHub Copilot extension in VS Code
-    - Sign in to GitHub in VS Code so Copilot Chat is available
-  - **Antigravity IDE**
-    - Install Antigravity IDE
-    - Complete first-launch/sign-in so local skills can be detected
-- **Terminal**
-  - **macOS / Linux** — built-in Terminal
-  - **Windows** — [PowerShell 7+](https://learn.microsoft.com/powershell/) (`pwsh`)
-
-No build step or internet access is needed beyond the initial download — the installer only copies
-files.
+If you are starting from a fresh machine, use **[Fresh start setup](fresh-start.md)** first.
 
 ## 2. Download BA-Kit
 
@@ -55,6 +40,14 @@ This connects BA skills to your assistant as `/` commands.
 **Windows (PowerShell 7+)**
 
 ```powershell
+.\install.ps1 -Agent copilot
+```
+
+If PowerShell says running scripts is disabled, run this first in the same
+terminal session, then retry:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\install.ps1 -Agent copilot
 ```
 

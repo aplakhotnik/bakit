@@ -504,17 +504,17 @@ function Read-MenuLine {
 
 function Invoke-Menu {
     $pre = " $((Get-PreselectedAgents) -join ' ') "
-    Write-Log ''
-    Write-Log 'Select the agent(s) / IDE(s) to install BA-Kit for.'
-    Write-Log "Enter the numbers separated by spaces (e.g. '1 3'), then press Enter."
-    Write-Log ''
+    [Console]::Out.WriteLine('')
+    [Console]::Out.WriteLine('Select the agent(s) / IDE(s) to install BA-Kit for.')
+    [Console]::Out.WriteLine("Enter the numbers separated by spaces (e.g. '1 3'), then press Enter.")
+    [Console]::Out.WriteLine('')
     $i = 0
     foreach ($k in $AgentKeys) {
         $i++
         $mark = if ($pre -like "* $k *") { '[x]' } else { '[ ]' }
-        Write-Log ("  {0}) {1} {2}" -f $i, $mark, (Get-AgentLabel $k))
+        [Console]::Out.WriteLine(("  {0}) {1} {2}" -f $i, $mark, (Get-AgentLabel $k)))
     }
-    Write-Log ''
+    [Console]::Out.WriteLine('')
     [Console]::Out.Write('Your selection (default = pre-selected [x]): ')
     $reply = Read-MenuLine
 

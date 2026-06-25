@@ -42,6 +42,22 @@ git clone https://github.com/aplakhotnik/bakit.git
 cd bakit
 ```
 
+**PowerShell says running scripts is disabled on this system.** This is Windows execution policy.
+Run this in the same PowerShell session, then run the installer again:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\install.ps1
+```
+
+This is session-only (it does not change machine-wide policy).
+
+Optional persistent user-level policy:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
 ## Upgrading & backups
 
 **How do I preview an upgrade before changing anything?** Run the installer with the dry-run flag —

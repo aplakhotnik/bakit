@@ -28,6 +28,7 @@ Driving the default flow from inside the AI assistant — slashing between `ba.s
 | If you want to… | Read |
 |-----------------|------|
 | Understand the terms (no jargon) | **[Concepts & glossary](docs/concepts.md)** |
+| Set up BA-Kit from a fresh machine | **[Fresh start setup (VS Code + Antigravity)](docs/fresh-start.md)** |
 | Install and create your first project | **[Getting started](docs/getting-started.md)** |
 | Learn the everyday BA flow | **[Working with the default workflow](docs/workflows.md)** |
 | Run the consultative idea-to-roadmap process | **[Discovery workflow (advanced)](docs/discovery.md)** |
@@ -38,7 +39,7 @@ Driving the default flow from inside the AI assistant — slashing between `ba.s
 ## Quickstart
 
 Use this if you already have `git` and your assistant installed. If you're starting from scratch,
-use **Full Installation (Fresh Start)** below.
+use **[Fresh start setup](docs/fresh-start.md)**.
 
 ```sh
 # 1. Download
@@ -64,70 +65,6 @@ Full walkthrough with expected output: **[Getting started](docs/getting-started.
 
 > **VS Code (Copilot):** after installing, reload the window and trust the folder so the `/ba.*`
 > commands appear. See the [FAQ](docs/faq.md) if they don't.
-
-## Full Installation (Fresh Start)
-
-If this is your first time using BA-Kit (or even your first time using these tools), use this path.
-This section focuses on the two setups used most in practice: **VS Code (Copilot)** and
-**Antigravity IDE**.
-
-### 1. Install prerequisites
-
-- **git** (required)
-  - macOS: `xcode-select --install`
-  - Windows: install Git for Windows from https://git-scm.com/download/win
-  - Linux: install from your distro package manager (for example, `sudo apt install git`)
-- **One IDE/assistant**
-  - **VS Code + GitHub Copilot** (recommended for most users)
-  - **Antigravity IDE**
-- **Terminal**
-  - macOS/Linux: built-in terminal
-  - Windows: PowerShell 7+ (`pwsh`)
-
-### 2. Clone BA-Kit
-
-```sh
-git clone https://github.com/aplakhotnik/bakit.git
-cd bakit
-```
-
-### 3. Install for VS Code (Copilot) first
-
-```sh
-./install.sh --agent copilot            # macOS / Linux
-# .\install.ps1 -Agent copilot         # Windows (PowerShell 7+)
-```
-
-After install in VS Code:
-
-- Reload window: Command Palette -> `Developer: Reload Window`
-- Trust folder if prompted
-- Open Copilot Chat, type `/`, verify commands like `/ba.start-project`
-
-### 4. Install for Antigravity
-
-Workspace scope (recommended when starting):
-
-```sh
-./install.sh --agent antigravity --scope workspace
-# .\install.ps1 -Agent antigravity -Scope workspace
-```
-
-Global scope (all projects on your machine):
-
-```sh
-./install.sh --agent antigravity --scope global
-# .\install.ps1 -Agent antigravity -Scope global
-```
-
-### 5. Verify both setups
-
-- **VS Code**: `.github/prompts/ba.start-project.prompt.md` exists
-- **Antigravity (workspace scope)**: `.agents/skills/ba.start-project/SKILL.md` exists
-- **Antigravity (global scope)**: `~/.gemini/config/skills/ba.start-project/SKILL.md` exists
-
-If you want other assistants later (Claude/Cursor/Generic), re-run installer with `--agent` (or
-`-Agent`) for each target.
 
 ## What you get
 
