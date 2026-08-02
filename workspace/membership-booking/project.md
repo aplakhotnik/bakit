@@ -39,10 +39,11 @@ loyalty tools that exist today. See `kb/context.md` for durable business context
 <!-- Tasks live under tasks/NNN-<slug>/. Created with: scripts/sh/init-task.sh "<project>" "<task>" -->
 
 - `001-membership-onboarding` — scope how a new member joins, picks a tier, gives
-  consent, and gets set up.
-- `002-booking-and-rewards` — scope booking an experience and earning/redeeming
-  rewards. Builds on the identity, tier model, consent decision, and vocabulary
-  settled in task 001 (reused via the shared knowledge base).
+  consent, and gets set up. **Complete** — analysed and specified end-to-end; the
+  elicitation history shows how conflicting inputs were reconciled.
+- `002-experience-reminders` — scope reminders before a booked Experience to cut
+  no-shows. **Ready to run** (`inputs/` only) — a deliberately simpler task for a live
+  `ba.specify` run; reuses the identity, consent, and vocabulary settled in task 001.
 
 ## Notes
 
