@@ -7,7 +7,7 @@ skills read to enforce the review gate. This file is the source of truth for the
 ```yaml
 ---
 id: ""                 # stable id within the task, e.g. "REQ-001" (required)
-type: ""               # requirements | docs-analysis | user-stories | confluence-page | project (required)
+type: ""               # e.g. requirements | docs-analysis | user-stories | story-map | risk-register | compliance-matrix | assumptions-log | prioritization | … (required)
 title: ""              # human-readable title (required)
 status: draft          # draft | approved  (created as draft; only an analyst sets approved)
 created: ""            # YYYY-MM-DD (required)
@@ -28,6 +28,9 @@ blocking_questions: 0  # (007) optional rollup: count of open questions with blo
 - Traceability fields are conditionally required by `type`:
   - `docs-analysis` → `sources` (cited input documents/sections)
   - `user-stories`, `confluence-page` → `derived_from` (upstream artifact ids)
+  - `gap-analysis`, `product-backlog`, `estimated-backlog`, `story-map` → `derived_from`
+  - `risk-register`, `compliance-matrix`, `assumptions-log`, `prioritization` → universal fields only
+    (no extra traceability field); each carries its own `## Change log` for §12 traceable updates
 
 ## Open-question rollup (007 additive extension)
 

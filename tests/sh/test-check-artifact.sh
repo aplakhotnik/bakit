@@ -366,5 +366,24 @@ printf '%s' "$out" | grep -q '^open_questions: 0$' && ok "story-map absent rollu
 # 26. Back-compat: existing requirements type still validates (Selected check does not apply).
 [ "$(run_check "$TMP/req.md")" = "0" ] && ok "non-story-map unaffected by Selected-variant check" || no "non-story-map unaffected by Selected-variant check"
 
+# --- Complementary artifact types (risk-register / compliance-matrix / assumptions-log / prioritization) ---
+
+# 27. Each complementary type validates with universal fields only, and honors the approval gate.
+for t in risk-register compliance-matrix assumptions-log prioritization; do
+  cat > "$TMP/comp.md" <<EOF
+---
+id: C-1
+type: $t
+title: Sample $t
+status: draft
+created: 2026-06-20
+updated: 2026-06-20
+---
+# Body
+EOF
+  [ "$(run_check "$TMP/comp.md")" = "0" ] && ok "$t validates (universal fields only)" || no "$t validates (universal fields only)"
+  [ "$(run_check --require-approved "$TMP/comp.md")" = "2" ] && ok "$t draft fails approval gate (exit 2)" || no "$t draft fails approval gate (exit 2)"
+done
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

@@ -21,6 +21,14 @@ All notable changes to BA-Kit are documented here. The format is based on
   they iterate until no material contradiction or blocking uncertainty remains (or the analyst
   defers), with **no fixed round cap** (the per-round question batch caps questions, not rounds).
 
+### Documentation & tests
+- Wove the complementary skills and the §11/§12 concepts into the top-level docs (`README.md`,
+  `docs/concepts.md`, `docs/workflows.md`) and the front-matter convention
+  (`templates/artifacts/_frontmatter.md`), so they are discoverable from the entry points and not
+  only in `skills/README.md`.
+- Added `check-artifact` coverage for the new artifact types (`risk-register`, `compliance-matrix`,
+  `assumptions-log`, `prioritization`) in both `tests/sh` and `tests/ps`.
+
 ## [1.0.0] - 2026-06-16
 
 ### Added

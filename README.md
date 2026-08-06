@@ -79,10 +79,13 @@ Full walkthrough with expected output: **[Getting started](docs/getting-started.
   - `ba.write-stories` — approved requirements → user stories with acceptance criteria (consuming
     the story map when one exists).
   - `ba.render-confluence` — approved artifact → local Confluence-ready Markdown.
+  - **Complementary helpers** *(standalone, off the chain)* — `ba.compliance-matrix`, `ba.prioritize`,
+    `ba.risk-register`, `ba.assumptions-log` for requirement-heavy pursuits (e.g. RFPs).
 - **Review gates & traceability** — every artifact carries `status: draft → approved` and provenance
   in YAML front-matter; nothing flows forward until you approve it.
 - **Two-level knowledge base** — shared project `kb/` + per-task `kb/` so the AI reuses known facts
-  instead of re-asking.
+  instead of re-asking. As tasks finish, a bounded **digest** of durable results is promoted into the
+  project `kb/` — appended, never overwriting your edits (constitution §11).
 - **Helper scripts** (POSIX shell + PowerShell, full parity) the skills run on your behalf — or that
   you can run directly.
 - **A separate, advanced [Discovery workflow](docs/discovery.md)** — a consultative BA/PO state
@@ -100,6 +103,10 @@ See **[Working with the default workflow](docs/workflows.md)** for the day-to-da
 - **Discovery** (advanced, separate): a four-state consultative process declared in
   [`workflow-discovery.md`](workflow-discovery.md). It coexists with the default chain and never
   auto-triggers it. See **[docs/discovery.md](docs/discovery.md)**.
+- **Complementary activities** (standalone): requirement-heavy helpers — `ba.compliance-matrix`,
+  `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log` — that run **off** the ordered chain
+  (deliberately not in `workflow.md`, so `ba.next` won't sequence them). See
+  **[skills/README.md](skills/README.md)**.
 
 ## Supported environments
 

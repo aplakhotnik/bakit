@@ -30,6 +30,9 @@ Idea / notes / documents  ──▶  guided skills  ──▶  reviewed Markdown
 | **Status: draft → approved** | Every artifact starts as a `draft`. When you're happy with it, you change its status to `approved`. Nothing moves to the next step until you approve. |
 | **Review gate** | The rule that a later step won't use an earlier artifact until *you* have approved it. This keeps a human in control. |
 | **Workflow** | The recommended order of skills (analyze → specify → *(decompose)* → write stories → render). BA-Kit can always tell you what's sensible to run next. |
+| **Complementary skill** | A standalone helper for requirement-heavy work (e.g. RFPs): `ba.compliance-matrix`, `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log`. **Not** part of the ordered chain — run any of them directly, any time; `ba.next` won't sequence them. |
+| **Project brain (KB promotion)** | As tasks finish, skills fold a short **digest** of durable results into the shared project `kb/` (a dated changelog entry + concise facts) so later tasks reuse them — never copying whole artifacts, never overwriting your edits (constitution §11). |
+| **Traceable updates** | Re-running a skill never silently deletes or overwrites: retired content is **superseded in place** (dated, with a reason) or moved to a `## Change log`, so history is preserved (constitution §12). |
 | **Open question** | Something that's still unclear or undecided. BA-Kit tracks these so gaps aren't lost; a *blocking* open question is one important enough that you probably want to resolve it before moving on. |
 | **Agent / IDE** | The AI tool you use — VS Code (GitHub Copilot), Claude, Cursor, or Antigravity. BA-Kit works the same way in all of them. |
 
