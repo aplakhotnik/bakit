@@ -80,6 +80,10 @@ switch ($Type) {
     'product-backlog' { Require-Field 'derived_from' }
     'estimated-backlog' { Require-Field 'derived_from' }
     'story-map'       { Require-Field 'derived_from' }
+    'compliance-matrix' { }
+    'risk-register'   { }
+    'assumptions-log' { }
+    'prioritization'  { }
     default           { Bakit-Warn "unknown artifact type '$Type' (continuing): $File" }
 }
 

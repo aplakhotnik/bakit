@@ -6,6 +6,21 @@ All notable changes to BA-Kit are documented here. The format is based on
 
 ## [Unreleased]
 
+### Added
+- **Complementary skills** for large, requirement-heavy pursuits: `ba.compliance-matrix`,
+  `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log` (each with a template and a registered
+  artifact type in `check-artifact`). Standalone — not part of the default `workflow.md` chain.
+- **Controlled project-brain promotion** (constitution §11): after producing an artifact, skills
+  append a bounded digest to the project `kb/` (changelog + registers), digest-only and non-destructive.
+- **Traceable, non-destructive updates** (constitution §12): on re-run, skills **supersede/flag+date**
+  rather than silently deleting content, rows, or open questions; a `## Change log` section is added
+  to the mutable artifact templates (risk-register, compliance-matrix, assumptions-log, prioritization).
+
+### Changed
+- `ba.specify` (deep mode) and `ba.analyze-docs` clarification loops are now **convergence-driven** —
+  they iterate until no material contradiction or blocking uncertainty remains (or the analyst
+  defers), with **no fixed round cap** (the per-round question batch caps questions, not rounds).
+
 ## [1.0.0] - 2026-06-16
 
 ### Added

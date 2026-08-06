@@ -29,15 +29,17 @@ Guided documentation analysis. Follow `memory/ba-constitution.md`.
 4. **Extract & assess.** Identify candidate requirements, gaps, inconsistencies, and open
    questions across the sources, reconciling them against the KB context from step 2 (flag where
    a source contradicts known knowledge).
-5. **Optional clarification round (analyst-driven, bounded).** If step 4 surfaced **material
-   contradictions** between sources (or against the KB), you MAY run a **single** clarification
-   round of **at most three** prioritized questions before drafting — focus on the highest-impact
-   contradictions first. This round is optional: if there are no material contradictions, or the
-   analyst prefers a one-shot analysis, **skip it and proceed directly to drafting** (the one-shot
-   path is always available).
+5. **Clarification loop (analyst-driven, iterative).** If step 4 surfaced **material contradictions**
+   between sources (or against the KB), run one or more clarification rounds — each a **bounded batch**
+   of at most three prioritized questions (highest-impact contradictions first) — and **keep iterating
+   until the material contradictions are resolved or the analyst explicitly defers them**. There is
+   **no fixed cap on rounds** (the batch size caps questions per round, not the number of rounds). This
+   loop is optional/skippable: if there are no material contradictions, or the analyst prefers a
+   one-shot analysis, **skip it and proceed directly to drafting** (the one-shot path is always
+   available).
    - Ask the bounded questions, then **fold the analyst's answers** into the extracted findings
      (update requirements/gaps and cite the answer's origin).
-   - For any contradiction that remains **unresolved** after the round, record it as a
+   - For any contradiction that remains **unresolved** after the analyst defers, record it as a
      **structured open question** in the artifact's `## Open Questions` table (ID, Question,
      Status `open`, Blocking flag, Origin, Resolution `—`) and keep the front-matter rollup
      (`open_questions` / `blocking_questions`) in sync. Never resolve a contradiction by asserting
@@ -50,9 +52,14 @@ Guided documentation analysis. Follow `memory/ba-constitution.md`.
 8. **Draft the artifact.** Populate `templates/artifacts/docs-analysis.md`; set front-matter
    `id`, `title`, `status: draft`, `created`/`updated`, and a NON-EMPTY `sources` list naming
    the reviewed documents.
-9. **Capture reusable knowledge.** If the analysis surfaced durable, reusable facts (agreed
-   terms, decisions, constraints), add or update the relevant `kb/` entry and reflect it in that
-   `kb/index.md`.
+9. **Capture reusable knowledge (controlled brain promotion).** Promote durable results to the
+   project brain per `memory/ba-constitution.md` §11: **append** an entry to `kb/changelog.md`
+   (date · task · `ba.analyze-docs` · 3–5 bullets · link to this artifact) and merge concise facts
+   into the relevant project `kb/` register/log (e.g. `requirements-register.md`, `open-questions.md`,
+   `decisions.md`, `glossary.md`, `source-register.md`), updating `kb/index.md` if you add a new
+   entry. **Digest only** — never copy the whole artifact or raw sources into the KB; never overwrite
+   analyst-authored KB content (supersede instead). Task-specific facts may stay in the task `kb/`;
+   a project without these KB files may skip this.
 10. **Present for review.** Show as an editable draft; do not self-approve.
 
 ## Validation

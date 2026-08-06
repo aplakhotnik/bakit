@@ -75,6 +75,7 @@ case "$TYPE" in
   discovery-document|project-charter) : ;;
   gap-analysis|product-backlog|estimated-backlog) require_field derived_from ;;
   story-map)                 require_field derived_from ;;
+  compliance-matrix|risk-register|assumptions-log|prioritization) : ;;
   *) bakit_warn "unknown artifact type '$TYPE' (continuing): $FILE" ;;
 esac
 
