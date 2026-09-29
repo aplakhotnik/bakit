@@ -23,13 +23,17 @@ Driving the default flow from inside the AI assistant — slashing between `ba.s
 
 ![BA-Kit skills demo: moving through start-project, start-task, analyze-docs, specify, and render-confluence](docs/assets/skill_demo.gif)
 
-## New here? Start with the docs
+## New here? Start with one page
+
+Never used BA-Kit — or an AI assistant's `/` commands — before? No technical background needed:
+**[Getting started](docs/getting-started.md)** takes you from a blank computer to your first
+reviewed requirements document, one step at a time.
+
+Already comfortable with the framework and looking for something specific instead?
 
 | If you want to… | Read |
 |-----------------|------|
 | Understand the terms (no jargon) | **[Concepts & glossary](docs/concepts.md)** |
-| Set up BA-Kit from a fresh machine | **[Fresh start setup (VS Code + Antigravity)](docs/fresh-start.md)** |
-| Install and create your first project | **[Getting started](docs/getting-started.md)** |
 | Learn the everyday BA flow | **[Working with the default workflow](docs/workflows.md)** |
 | Run the consultative idea-to-roadmap process | **[Discovery workflow (advanced)](docs/discovery.md)** |
 | See a finished project before you start | **[Worked example](examples/README.md)** |
@@ -38,8 +42,8 @@ Driving the default flow from inside the AI assistant — slashing between `ba.s
 
 ## Quickstart
 
-Use this if you already have `git` and your assistant installed. If you're starting from scratch,
-use **[Fresh start setup](docs/fresh-start.md)**.
+Use this if you already have `git` and your assistant installed. New to any of this? Use
+**[Getting started](docs/getting-started.md)** instead — it explains every step in plain language.
 
 ```sh
 # 1. Download
