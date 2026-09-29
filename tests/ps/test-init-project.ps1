@@ -49,6 +49,34 @@ try {
 
     # 5. Empty/invalid name fails.
     if ((Run-Script $INIT @('')) -ne 0) { Ok 'empty name rejected' } else { No 'empty name rejected' }
+
+    # 6. Default mode is independent (kb_mode recorded; no brain registers).
+    if (Select-String -LiteralPath $projMd -Pattern '^kb_mode: independent' -Quiet) { Ok 'default mode is independent' } else { No 'default mode is independent' }
+    if (-not (Test-Path (Join-Path $WS 'payments-revamp/kb/changelog.md'))) { Ok 'independent has no brain registers' } else { No 'independent has no brain registers' }
+
+    # 7. Brain mode scaffolds registers + records kb_mode: brain.
+    if ((Run-Script $INIT @('RFP Pursuit', '--mode', 'brain')) -eq 0) { Ok 'creates brain project' } else { No 'creates brain project' }
+    if (Select-String -LiteralPath (Join-Path $WS 'rfp-pursuit/project.md') -Pattern '^kb_mode: brain' -Quiet) { Ok 'brain mode recorded' } else { No 'brain mode recorded' }
+    $bmOk = $true
+    foreach ($f in @('changelog', 'requirements-register', 'open-questions', 'decisions', 'glossary')) {
+        if (-not (Test-Path (Join-Path $WS "rfp-pursuit/kb/$f.md"))) { $bmOk = $false }
+    }
+    if ($bmOk) { Ok 'brain registers scaffolded' } else { No 'brain registers scaffolded' }
+
+    # 8. Invalid mode is rejected.
+    if ((Run-Script $INIT @('Bad Mode', '--mode', 'nonsense')) -ne 0) { Ok 'invalid mode rejected' } else { No 'invalid mode rejected' }
+
+    # 9. Upgrade an independent project to brain (idempotent, non-destructive).
+    $idxBefore = (Join-Path $TMP 'index-before.md')
+    Copy-Item -LiteralPath $kbIndex -Destination $idxBefore -Force
+    if ((Run-Script $INIT @('Payments Revamp', '--upgrade-to-brain')) -eq 0) { Ok 'upgrade succeeds' } else { No 'upgrade succeeds' }
+    if (Select-String -LiteralPath $projMd -Pattern '^kb_mode: brain' -Quiet) { Ok 'upgrade sets kb_mode brain' } else { No 'upgrade sets kb_mode brain' }
+    if (Test-Path (Join-Path $WS 'payments-revamp/kb/changelog.md')) { Ok 'upgrade scaffolds registers' } else { No 'upgrade scaffolds registers' }
+    if ((Get-FileHash $idxBefore).Hash -eq (Get-FileHash $kbIndex).Hash) { Ok 'upgrade preserves existing kb/index.md' } else { No 'upgrade preserves existing kb/index.md' }
+    if ((Run-Script $INIT @('Payments Revamp', '--upgrade-to-brain')) -eq 0) { Ok 'upgrade is idempotent' } else { No 'upgrade is idempotent' }
+
+    # 10. Upgrade a non-existent project fails.
+    if ((Run-Script $INIT @('Ghost Project', '--upgrade-to-brain')) -ne 0) { Ok 'upgrade of missing project fails' } else { No 'upgrade of missing project fails' }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

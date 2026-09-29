@@ -81,6 +81,9 @@ and review-gated.
     human edits** — never delete or rewrite analyst-authored KB content; supersede rather than
     overwrite; (d) **advisory** — promotion records knowledge; it never sets an artifact `approved`.
     A project without these KB files (e.g. a small project) may skip promotion — it is never an error.
+    **Mode-aware:** when `project.md` declares `kb_mode: brain`, promotion is a **required** step on
+    every task run (the project `kb/` is the single source of truth, scaffolded with `changelog.md`
+    and registers); in `kb_mode: independent` (the default) promotion is **best-effort/optional**.
 
 12. **Traceable, non-destructive updates** — when re-running a skill or updating an existing artifact
     or KB entry, **never silently delete, overwrite, or drop** existing content, rows, open questions,

@@ -86,6 +86,10 @@ Full walkthrough with expected output: **[Getting started](docs/getting-started.
 - **Two-level knowledge base** — shared project `kb/` + per-task `kb/` so the AI reuses known facts
   instead of re-asking. As tasks finish, a bounded **digest** of durable results is promoted into the
   project `kb/` — appended, never overwriting your edits (constitution §11).
+- **Two project modes** — create a project as **independent** (default; a light shared `kb/index.md`)
+  or **brain** (`--mode brain`): the `kb/` becomes the single source of truth, scaffolded with a
+  changelog + registers that every task grounds on and promotes back. Upgrade later with
+  `--upgrade-to-brain`.
 - **Helper scripts** (POSIX shell + PowerShell, full parity) the skills run on your behalf — or that
   you can run directly.
 - **A separate, advanced [Discovery workflow](docs/discovery.md)** — a consultative BA/PO state

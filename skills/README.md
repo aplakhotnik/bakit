@@ -103,6 +103,12 @@ and for large inputs recurse into only the relevant entries in focused passes (l
 Recursive-Language-Model strategy), degrading to a single pass for small inputs. A missing or
 empty `kb/` never causes failure. See the contract's §"KB-aware grounding".
 
+**Project modes.** A project is created **independent** (default — a light shared `kb/index.md`) or
+**brain** (`ba.start-project` mode / `init-project --mode brain`): in brain mode the project `kb/` is
+the single source of truth, scaffolded with `changelog.md` + registers (`requirements-register`,
+`open-questions`, `decisions`, `glossary`), and §11 promotion is a required per-task step. An
+existing project can be upgraded with `init-project --upgrade-to-brain`.
+
 ## How to add a new skill (no core edits required)
 
 BA-Kit is modular: a new skill is a drop-in file plus its template. You do **not** modify any

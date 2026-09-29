@@ -3,6 +3,7 @@ id: ""
 type: project
 title: ""
 status: active
+kb_mode: independent
 created: ""
 updated: ""
 ---

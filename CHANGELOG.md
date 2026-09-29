@@ -7,6 +7,12 @@ All notable changes to BA-Kit are documented here. The format is based on
 ## [Unreleased]
 
 ### Added
+- **Two project init modes** — `ba.start-project` / `init-project` now take `--mode independent|brain`
+  (default `independent`, fully backward compatible). **brain** mode scaffolds the project `kb/` as the
+  single source of truth (`changelog.md` + `requirements-register`, `open-questions`, `decisions`,
+  `glossary`), records `kb_mode` in `project.md`, and makes §11 promotion a required per-task step.
+  Existing projects can be migrated with `--upgrade-to-brain` (idempotent, non-destructive). Full
+  sh/ps parity + tests.
 - **Complementary skills** for large, requirement-heavy pursuits: `ba.compliance-matrix`,
   `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log` (each with a template and a registered
   artifact type in `check-artifact`). Standalone — not part of the default `workflow.md` chain.
