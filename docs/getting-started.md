@@ -120,6 +120,12 @@ The assistant scaffolds `workspace/payments-revamp/` and asks a few questions to
 context** (vision, stakeholders, constraints) into the shared knowledge base, so later steps reuse
 it instead of re-asking.
 
+> **Independent or brain?** By default a project is **independent** (a light shared `kb/index.md`).
+> For a multi-task pursuit where knowledge must compound (e.g. an RFP), start it in **brain** mode —
+> the assistant runs `init-project.sh "<name>" --mode brain`, which scaffolds the `kb/` as the single
+> source of truth (a `changelog.md` + registers). You can upgrade an existing project any time with
+> `init-project.sh "<name>" --upgrade-to-brain`.
+
 **Step 2 — Add a task.**
 
 ```text

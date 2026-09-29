@@ -15,17 +15,27 @@ you invoke the helper on their behalf. Follow `memory/ba-constitution.md`
 
 ## When invoked, you MUST
 
-1. **Get the project name.** Use the name the analyst provided; if none, ask for one. Keep it
-   short and human-readable (it is slugified for the folder).
-2. **Scaffold the workspace.** Run the initiation helper on the analyst's behalf:
+1. **Get the project name and choose a mode.** Use the name the analyst provided; if none, ask for
+   one (it is slugified for the folder). Then pick the **project mode**:
+   - **independent** (default) — a light shared `kb/index.md`; best for a single task or a small,
+     loosely-coupled set of tasks. Brain promotion (§11) is best-effort.
+   - **brain** — the project `kb/` is the **single source of truth**; init scaffolds `changelog.md`
+     plus registers (`requirements-register`, `open-questions`, `decisions`, `glossary`). Best for a
+     multi-task pursuit (e.g. an RFP) where knowledge must compound across tasks; promotion (§11) is
+     expected on every task. If the analyst is unsure, default to **independent** — it can be
+     upgraded later.
+2. **Scaffold the workspace.** Run the initiation helper on the analyst's behalf (pass the chosen
+   mode; omit `--mode` for the default):
 
    ```sh
-   scripts/sh/init-project.sh "<project name>"
+   scripts/sh/init-project.sh "<project name>" --mode <independent|brain>
    ```
 
-   This creates `workspace/<slug>/project.md`, an empty `tasks/` folder, and a shared
-   project-level knowledge base at `kb/index.md`. It is collision-safe: if the project exists,
-   report that and stop rather than overwriting.
+   This creates `workspace/<slug>/project.md` (recording `kb_mode`), an empty `tasks/` folder, and
+   the shared project-level knowledge base at `kb/index.md`. In **brain** mode it also scaffolds the
+   changelog + registers. It is collision-safe: if the project exists, report that and stop rather
+   than overwriting. An existing independent project can later be upgraded with
+   `scripts/sh/init-project.sh "<name>" --upgrade-to-brain`.
 3. **Elicit project context.** Ask the analyst a short, bounded set of questions to capture
    durable, project-wide context that downstream skills (e.g. `ba.specify`) will consult instead
    of re-asking: business goals/outcomes, key stakeholders/roles, domain terms, known constraints

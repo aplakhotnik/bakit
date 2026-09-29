@@ -29,6 +29,13 @@ Beyond creating folders, the assistant captures **project context** — vision, 
 constraints, glossary terms — into the shared project `kb/`. This is grounding the AI reuses across
 every task, so you don't repeat yourself. Spend a couple of minutes here; it pays off later.
 
+> **Independent or brain mode?** By default the project is **independent** (a light shared
+> `kb/index.md`). For a multi-task pursuit where knowledge must compound (e.g. an RFP), create it in
+> **brain** mode (`init-project.sh "<name>" --mode brain`): the `kb/` becomes the single source of
+> truth, scaffolded with a `changelog.md` + registers that every task grounds on and promotes back.
+> Upgrade an existing project any time with `--upgrade-to-brain`. See the
+> [glossary](concepts.md) (“Project mode”).
+
 ## Step 2 — Add a task (with context)
 
 ```text
