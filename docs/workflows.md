@@ -129,6 +129,23 @@ calls — so you stay in control of what gets published.
 You can produce stories, a Confluence page, or both — they're independent optional steps off the
 same approved requirements.
 
+## Complementary activities (standalone, off the chain)
+
+Requirement-heavy pursuits (e.g. RFPs) sometimes need artifacts that aren't part of the linear
+chain. These skills are **standalone and ungated** — run them any time against your requirement
+set or knowledge base; `ba.next` won't sequence them, and they never block the default flow:
+
+- `/ba.compliance-matrix` — map each requirement to a response disposition, approach, and owner
+  (with a MUST-coverage rollup) → `artifacts/compliance-matrix.md`.
+- `/ba.prioritize` — rank a requirement set (e.g. MoSCoW / weighted) → `artifacts/prioritization.md`.
+- `/ba.risk-register` — capture risks with likelihood/impact, mitigation, and owners → `artifacts/risk-register.md`.
+- `/ba.assumptions-log` — record explicit assumptions with validation status → `artifacts/assumptions-log.md`.
+
+Each grounds on the knowledge base and promotes a bounded digest back to the project `kb/`
+(constitution §11); re-runs update **traceably** — superseding/annotating with a dated
+`## Change log` rather than overwriting (constitution §12). Full reference:
+**[skills/README.md](../skills/README.md)**.
+
 ## Asking "what's next?" any time
 
 ```text

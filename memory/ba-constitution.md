@@ -70,6 +70,27 @@ and review-gated.
     approval status; when a prerequisite is unmet, point to the approval/edit step instead of
     advancing.
 
+11. **Project-brain promotion (controlled)** — after presenting an artifact for review, promote a
+    **bounded, structured digest** of durable results into the project-level `kb/` so later tasks
+    reuse them. This MUST be controlled: (a) **append, never overwrite** — add an entry to
+    `kb/changelog.md` (date · task · skill · 3–5 bullets · link to the full artifact) and merge
+    concise facts into the relevant register/log entry (e.g. `requirements-register.md`,
+    `open-questions.md`, `decisions.md`, `glossary.md`), updating `kb/index.md` when you add a new
+    entry; (b) **digest only** — never copy the whole artifact or raw source material into the KB;
+    keep it index-first and cite the task artifact / `reference/` file for detail; (c) **preserve
+    human edits** — never delete or rewrite analyst-authored KB content; supersede rather than
+    overwrite; (d) **advisory** — promotion records knowledge; it never sets an artifact `approved`.
+    A project without these KB files (e.g. a small project) may skip promotion — it is never an error.
+
+12. **Traceable, non-destructive updates** — when re-running a skill or updating an existing artifact
+    or KB entry, **never silently delete, overwrite, or drop** existing content, rows, open questions,
+    decisions, or assumptions. To retire something, **supersede it in place**: mark it with a
+    `status` / `~~strikethrough~~` plus a **date and reason**, or move it to a dated `## Change log`
+    (or `## Superseded`) section — preserving the original text and its ID. **Hard-delete only when
+    the analyst explicitly requests it**, and record the deletion (what, when, why) in the change log.
+    Open questions are resolved/deferred/superseded by changing their `Status` (with a dated
+    `Resolution`), never by removing the row. Extends §8 (Non-destructive) and §11 (append-only promotion).
+
 **"Next steps" block shape** (rendered as agent-appropriate runnable commands, derived from
 `workflow.md`):
 
@@ -91,8 +112,9 @@ In addition to the contract above, `ba.specify`:
   title;
 - **deep mode** runs a multi-round elicitation loop, each round raising a **bounded** (default ~3),
   **prioritized** (scope before detail) set of clarification questions with options + implications,
-  persisting the living `elicitation-plan.md`, and folding answers back in until the analyst signals
-  common understanding or defers the rest;
+  persisting the living `elicitation-plan.md`, and folding answers back in. The loop **continues
+  until no material contradiction or blocking uncertainty remains unresolved** (no fixed round cap),
+  ending only when the analyst signals common understanding or explicitly defers the remainder;
 - after drafting, **validates** the spec against a quality checklist (testable requirements;
   measurable, tech-agnostic success criteria; bounded scope; recorded assumptions; no unresolved
   markers) and warns rather than presenting as complete if it cannot fully pass; also passes

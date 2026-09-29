@@ -69,8 +69,13 @@ mapping + INVEST) rather than emitting a raw 1:1 dump. Either way it produces th
    fallback path), and note any unresolved ambiguity as a story's Open questions.
 8. **Draft the artifact.** Populate `templates/artifacts/user-stories.md`; set front-matter
    `id`, `title`, `status: draft`, `created`/`updated`.
-9. **Capture reusable knowledge.** If new personas, terms, or decisions emerged, add or update
-   the relevant `kb/` entry and reflect it in that `kb/index.md`.
+9. **Capture reusable knowledge (controlled brain promotion).** Promote durable results to the
+   project brain per `memory/ba-constitution.md` §11: **append** an entry to `kb/changelog.md`
+   (date · task · `ba.write-stories` · 3–5 bullets · link to this artifact) and merge concise facts
+   (new personas, terms, decisions) into the relevant project `kb/` register/log (e.g. `glossary.md`,
+   `decisions.md`, `requirements-register.md`), updating `kb/index.md` if you add a new entry.
+   **Digest only** — never copy the whole artifact into the KB; never overwrite analyst-authored KB
+   content (supersede instead). A project without these KB files may skip this.
 10. **Present for review.** Editable draft; do not self-approve.
 
 ## Validation

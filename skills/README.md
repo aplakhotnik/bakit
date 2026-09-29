@@ -33,6 +33,22 @@ shell scripts by hand:
 | `ba.write-stories` | `artifacts/user-stories.md` | approved `requirements.md` |
 | `ba.render-confluence` | `deliverables/*-confluence.md` | an approved source artifact |
 
+### Complementary activities (large-analysis / RFP helpers)
+
+Standalone utilities for requirement-heavy pursuits. They are **not part of the default chain** and
+are **not gated** — invoke them directly as needed; each grounds on the KB and promotes a digest
+back (constitution §11).
+
+| Skill | Produces | Prerequisite |
+|-------|----------|--------------|
+| `ba.compliance-matrix` | `artifacts/compliance-matrix.md` | a requirement set (register or approved `requirements.md`) |
+| `ba.prioritize` | `artifacts/prioritization.md` | a requirement set |
+| `ba.risk-register` | `artifacts/risk-register.md` | none (seeds from gaps / open questions) |
+| `ba.assumptions-log` | `artifacts/assumptions-log.md` | none |
+
+> These are intentionally **not** in [`../workflow.md`](../workflow.md) (which declares only the
+> ordered, gated default chain), so `ba.next` won't sequence them — run them in parallel with the chain.
+
 ### Discovery activities (consultative BA/PO state machine)
 
 A separate, additive workflow that turns a plain idea into an estimated, road-mapped backlog

@@ -171,6 +171,16 @@ try {
 
     # 26. Back-compat: existing requirements type still validates (Selected check does not apply).
     if ((Run-Check @($req)) -eq 0) { Ok 'non-story-map unaffected by Selected-variant check' } else { No 'non-story-map unaffected by Selected-variant check' }
+
+    # --- Complementary artifact types (risk-register / compliance-matrix / assumptions-log / prioritization) ---
+
+    # 27. Each complementary type validates with universal fields only, and honors the approval gate.
+    foreach ($t in @('risk-register','compliance-matrix','assumptions-log','prioritization')) {
+        $cf = (Join-Path $TMP 'comp.md')
+        Write-Art $cf "---`nid: C-1`ntype: $t`ntitle: Sample $t`nstatus: draft`ncreated: 2026-06-20`nupdated: 2026-06-20`n---`n# Body`n"
+        if ((Run-Check @($cf)) -eq 0) { Ok "$t validates (universal fields only)" } else { No "$t validates (universal fields only)" }
+        if ((Run-Check @('--require-approved', $cf)) -eq 2) { Ok "$t draft fails approval gate (exit 2)" } else { No "$t draft fails approval gate (exit 2)" }
+    }
 }
 finally {
     Remove-Item -LiteralPath $TMP -Recurse -Force -ErrorAction SilentlyContinue

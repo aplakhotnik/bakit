@@ -39,6 +39,10 @@ only — no network/API calls.** Follow `memory/ba-constitution.md`.
    `source_artifact`, and `rendered` (today).
 7. **Fail safe.** This adapter is optional: if anything it depends on is unavailable, still
    produce the local file and never block the analyst's core work.
+8. **Note in the brain (controlled).** Per `memory/ba-constitution.md` §11, **append** a one-line
+   entry to the project `kb/changelog.md` recording that this deliverable was rendered (date · task ·
+   `ba.render-confluence` · link). Rendering introduces no new facts, so do not otherwise modify the
+   KB. A project without `kb/changelog.md` may skip this.
 
 ## Validation
 

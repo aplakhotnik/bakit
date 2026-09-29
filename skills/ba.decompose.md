@@ -109,7 +109,14 @@ Contract"). Ground all splitting decisions in the catalogue at `docs/decompositi
 14. **Update loop state.** Refresh `## Session State` (iteration, confirmed depth, upstream snapshot,
     pending items) and **append a `## Change Log` entry** for every material update.
 
-15. **Present for review.** Show the map as an **editable draft**. Do **NOT** set `status: approved`
+15. **Capture reusable knowledge (controlled brain promotion).** Promote durable results to the
+    project brain per `memory/ba-constitution.md` §11: **append** an entry to `kb/changelog.md`
+    (date · task · `ba.decompose` · 3–5 bullets · link to this map) and merge concise facts
+    (backbone, MVP/walking-skeleton scope, key slice decisions) into the relevant project `kb/`
+    register/log, updating `kb/index.md` if you add a new entry. **Digest only**; never overwrite
+    analyst-authored KB content (supersede instead). A project without these KB files may skip this.
+
+16. **Present for review.** Show the map as an **editable draft**. Do **NOT** set `status: approved`
     — that is the analyst's sign-off.
 
 ## Validation

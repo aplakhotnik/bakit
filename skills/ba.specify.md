@@ -83,8 +83,14 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
 
 5. **Run the iterative elicitation loop (deep mode only — deep research).** In quick mode, skip
    this step (you already ran a single clarification pass in step 3) and go to step 6. In deep
-   mode, repeat the following as multiple rounds until the analyst signals common understanding
-   (or explicitly defers the rest):
+   mode, **repeat rounds until convergence** — i.e. until **no material contradiction or blocking
+   uncertainty remains unresolved**. There is **no fixed cap on the number of rounds**: keep going
+   as long as unresolved material contradictions or blocking questions exist and the analyst stays
+   engaged. Each round raises a **bounded batch** (default ≤3 questions) — this caps *questions per
+   round for readability*, **not** the number of rounds. The loop ends only when either (a) no
+   material contradictions/blocking uncertainties remain, or (b) the analyst **explicitly defers or
+   accepts** the residual items (recorded then as open questions/assumptions, never as fact). Each
+   round:
    1. **Detect & question.** Identify ambiguities, gaps, and conflicts. Raise a **bounded**
       (default ≤3 per round), **prioritized** (scope before detail) set of clarification
       questions, each with **options and the implication of each option**. Never silently guess on
@@ -97,8 +103,11 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
       `created`/`updated`, and bump `round` each pass.
    3. **Fold in answers.** Incorporate the analyst's answers; move resolved items to **Resolved**.
       Record any deferred question as a flagged assumption / open question — never as fact.
-   4. **Check convergence.** Ask the analyst whether understanding is complete. If not, run
-      another round. If yes (or they defer remaining items), proceed to draft the specification.
+   4. **Check convergence.** Re-scan for **unresolved material contradictions and blocking
+      questions**. If any remain, run **another round** — do not stop at an arbitrary count. Proceed
+      to draft only when **none remain**, or when the analyst **explicitly defers/accepts** the
+      remainder (record each deferred item in the Open Questions table with its Blocking flag
+      preserved, never resolved by assumption).
 
 6. **Draft the specification.** Derive a concise, human-readable `title` for the need, then
    populate `templates/artifacts/requirements.md` **as the existing `type: requirements` artifact
@@ -125,20 +134,29 @@ front-matter — no agent-proprietary features. Follow `memory/ba-constitution.m
      analyst confirmation.
    - If a **draft** `requirements.md` already exists, confirm before replacing it (note when it
      was last written and in which mode).
+   - Per `memory/ba-constitution.md` §12, on re-run **do not delete existing requirements or open
+     questions** — supersede them in place with a dated `Status` / `Resolution`; hard-delete only on request.
 
-8. **Validate against the quality checklist.** After drafting, self-validate and iterate within a
-   bounded number of passes (default ≤3):
+8. **Validate against the quality checklist.** After drafting, self-validate and **iterate until
+   the checklist passes** (to avoid thrash, stop self-looping only when a pass produces no new
+   corrections — then surface any residue):
    - Each functional requirement is **testable and unambiguous**.
    - Each success criterion is **measurable and free of implementation/technology detail**.
    - **Scope is bounded**; assumptions are recorded; **no unresolved clarification markers**
      remain (deferred items live under Open Questions/assumptions, not as fact).
-   - Flag each failing item with the specific issue, revise, and re-check. If the checklist cannot
-     fully pass within the pass limit, record the remaining issues and **warn** the analyst rather
-     than presenting the spec as complete.
+   - Flag each failing item with the specific issue, revise, and re-check. If an item cannot be
+     resolved by self-correction (it needs an analyst decision), do **not** loop indefinitely —
+     record it under Open Questions/assumptions and **warn** the analyst rather than presenting the
+     spec as complete.
 
-9. **Capture reusable knowledge.** If durable, reusable knowledge emerged (agreed terms,
-   decisions, constraints), add or update the relevant `kb/` entry and reflect it in that
-   `kb/index.md` (task-level for task-specific facts, project-level for shared ones).
+9. **Capture reusable knowledge (controlled brain promotion).** Promote durable results to the
+   project brain per `memory/ba-constitution.md` §11: **append** an entry to `kb/changelog.md`
+   (date · task · `ba.specify` · 3–5 bullets · link to this artifact) and merge concise facts into
+   the relevant project `kb/` register/log (e.g. `requirements-register.md`, `open-questions.md`,
+   `decisions.md`, `glossary.md`), updating `kb/index.md` if you add a new entry. **Digest only** —
+   never copy the whole artifact or raw sources into the KB; never overwrite analyst-authored KB
+   content (supersede instead). Task-specific facts may stay in the task `kb/` (project-level for
+   shared ones); a project without these KB files may skip this.
 
 10. **Present for review.** Show the artifact(s) as editable proposals — `requirements.md` always,
     plus `elicitation-plan.md` in deep mode. Do NOT set `status: approved` — that is the analyst's
