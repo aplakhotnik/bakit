@@ -138,19 +138,28 @@ same approved requirements.
 
 ## Complementary activities (standalone, off the chain)
 
-Requirement-heavy pursuits (e.g. RFPs) sometimes need artifacts that aren't part of the linear
+Requirement-heavy pursuits (e.g. RFPs) sometimes need activities that aren't part of the linear
 chain. These skills are **standalone and ungated** — run them any time against your requirement
 set or knowledge base; `ba.next` won't sequence them, and they never block the default flow:
 
+- `/ba.grill` — **the understanding gate.** Run it *before* `ba.specify`/`ba.decompose`/anything
+  scoping, precisely when an idea is still loose. It interviews you in prerequisite-ordered
+  **frontier rounds** (every question whose prerequisites are already settled — never a blocked one
+  asked early), pushes back on implicit decisions and scope drift, and names **ungrillable**
+  questions (ones that need a prototype, sample, or real conversation to answer, not more
+  discussion) rather than rephrasing them forever. It produces **no artifact** by default — the
+  payoff is a sharper shared understanding in the same conversation, handed straight to
+  `ba.specify` or `ba.discover.initiate`. Add `--capture` to append a digest to the `kb/` (constitution
+  §11/§12); plain `/ba.grill` writes nothing.
 - `/ba.compliance-matrix` — map each requirement to a response disposition, approach, and owner
   (with a MUST-coverage rollup) → `artifacts/compliance-matrix.md`.
 - `/ba.prioritize` — rank a requirement set (e.g. MoSCoW / weighted) → `artifacts/prioritization.md`.
 - `/ba.risk-register` — capture risks with likelihood/impact, mitigation, and owners → `artifacts/risk-register.md`.
 - `/ba.assumptions-log` — record explicit assumptions with validation status → `artifacts/assumptions-log.md`.
 
-Each grounds on the knowledge base and promotes a bounded digest back to the project `kb/`
-(constitution §11); re-runs update **traceably** — superseding/annotating with a dated
-`## Change log` rather than overwriting (constitution §12). Full reference:
+Each of the artifact-producing helpers grounds on the knowledge base and promotes a bounded digest
+back to the project `kb/` (constitution §11); re-runs update **traceably** — superseding/annotating
+with a dated `## Change log` rather than overwriting (constitution §12). Full reference:
 **[skills/README.md](../skills/README.md)**.
 
 ## Asking "what's next?" any time
