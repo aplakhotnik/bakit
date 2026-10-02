@@ -7,6 +7,13 @@ All notable changes to BA-Kit are documented here. The format is based on
 ## [Unreleased]
 
 ### Added
+- **`ba.grill` — the understanding gate.** A stateless interrogation skill that interviews the
+  analyst in prerequisite-ordered **frontier rounds** until a loose idea can be committed to,
+  pushing back on implicit decisions and scope drift and separating the result into decisions /
+  open questions / assumptions / **ungrillable** items (which need a prototype or sample to react
+  to). Writes no artifact unless invoked with `--capture` (append-only KB digest per §11/§12).
+  Codified as constitution **§13 (Grill before committing)**. Method adapted from
+  [`/grill-me`](https://www.aihero.dev/skills-grill-me).
 - **Two project init modes** — `ba.start-project` / `init-project` now take `--mode independent|brain`
   (default `independent`, fully backward compatible). **brain** mode scaffolds the project `kb/` as the
   single source of truth (`changelog.md` + `requirements-register`, `open-questions`, `decisions`,

@@ -13,5 +13,8 @@
 # BA workspaces created at runtime
 workspace/
 
+# Analyst-private notes (never shared, even if a workspace is published)
+**/private/
+
 # OS noise
 .DS_Store
