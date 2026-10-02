@@ -41,10 +41,19 @@ back (constitution §11).
 
 | Skill | Produces | Prerequisite |
 |-------|----------|--------------|
+| `ba.grill` | nothing (stateless alignment); optional append-only KB digest | none |
 | `ba.compliance-matrix` | `artifacts/compliance-matrix.md` | a requirement set (register or approved `requirements.md`) |
 | `ba.prioritize` | `artifacts/prioritization.md` | a requirement set |
 | `ba.risk-register` | `artifacts/risk-register.md` | none (seeds from gaps / open questions) |
 | `ba.assumptions-log` | `artifacts/assumptions-log.md` | none |
+
+> **`ba.grill` — the understanding gate.** Run it *before* scoping anything loose (constitution
+> §13). It interviews the analyst in **frontier rounds** (only questions whose prerequisites are
+> already settled), pushes back on implicit decisions and scope drift, and separates the result into
+> decisions / open questions / assumptions / **ungrillable** items that need a prototype or sample to
+> react to. It writes **no artifact** unless invoked with `--capture`, which appends a digest to the
+> KB. Hand the same conversation straight to `ba.specify` or `ba.discover.initiate`. Method adapted
+> from [`/grill-me`](https://www.aihero.dev/skills-grill-me).
 
 > These are intentionally **not** in [`../workflow.md`](../workflow.md) (which declares only the
 > ordered, gated default chain), so `ba.next` won't sequence them — run them in parallel with the chain.

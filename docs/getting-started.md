@@ -144,6 +144,23 @@ Let's walk through a real example: imagine you've been asked to gather requireme
 **employee onboarding portal**. Everything below works the same for whatever you're actually
 working on — just swap in your own words when you type.
 
+> **Is your idea still fuzzy?** If what you've been asked to do is vague, or you're not even sure
+> you could explain it clearly to someone else yet, do this first:
+>
+> ```text
+> /ba.grill
+> ```
+>
+> Instead of writing anything, the assistant interviews you — asking a batch of questions at a
+> time (a **"round"** — just every question that makes sense to ask right now; it won't ask
+> something that depends on an answer you haven't given yet), pushing back if an answer quietly
+> decides something bigger, and being upfront when a question is **"ungrillable"** — plain English
+> for "talking about this further won't help; let's try a quick mock-up / sample / 5-minute call
+> instead." It writes nothing to disk unless you ask it to. When your idea feels sharp enough, stay
+> in the same chat and move straight to Step 1 below.
+>
+> Already clear on what you need? Skip straight to Step 1.
+
 ### Step 1 — Start a project
 
 In the Copilot chat panel, type:

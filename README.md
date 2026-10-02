@@ -83,8 +83,9 @@ Full walkthrough with expected output: **[Getting started](docs/getting-started.
   - `ba.write-stories` — approved requirements → user stories with acceptance criteria (consuming
     the story map when one exists).
   - `ba.render-confluence` — approved artifact → local Confluence-ready Markdown.
-  - **Complementary helpers** *(standalone, off the chain)* — `ba.compliance-matrix`, `ba.prioritize`,
-    `ba.risk-register`, `ba.assumptions-log` for requirement-heavy pursuits (e.g. RFPs).
+  - **Complementary helpers** *(standalone, off the chain)* — `ba.grill` (interrogate a loose idea
+    before committing to scope), `ba.compliance-matrix`, `ba.prioritize`, `ba.risk-register`,
+    `ba.assumptions-log` for requirement-heavy pursuits (e.g. RFPs).
 - **Review gates & traceability** — every artifact carries `status: draft → approved` and provenance
   in YAML front-matter; nothing flows forward until you approve it.
 - **Two-level knowledge base** — shared project `kb/` + per-task `kb/` so the AI reuses known facts
@@ -113,10 +114,11 @@ See **[Working with the default workflow](docs/workflows.md)** for the day-to-da
 - **Discovery** (advanced, separate): a four-state consultative process declared in
   [`workflow-discovery.md`](workflow-discovery.md). It coexists with the default chain and never
   auto-triggers it. See **[docs/discovery.md](docs/discovery.md)**.
-- **Complementary activities** (standalone): requirement-heavy helpers — `ba.compliance-matrix`,
-  `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log` — that run **off** the ordered chain
-  (deliberately not in `workflow.md`, so `ba.next` won't sequence them). See
-  **[skills/README.md](skills/README.md)**.
+- **Complementary activities** (standalone): `ba.grill` — the understanding gate, interrogates a
+  loose idea in frontier rounds *before* any scoping artifact exists — plus requirement-heavy
+  helpers `ba.compliance-matrix`, `ba.prioritize`, `ba.risk-register`, `ba.assumptions-log`. All run
+  **off** the ordered chain (deliberately not in `workflow.md`, so `ba.next` won't sequence them).
+  See **[skills/README.md](skills/README.md)**.
 
 ## Supported environments
 

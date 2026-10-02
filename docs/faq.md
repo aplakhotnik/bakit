@@ -120,6 +120,26 @@ deep is the safe default.
 **Where are my files?** Under `workspace/<project>/tasks/<NNN-task>/`. Override the workspace location
 with the `BAKIT_WORKSPACE` environment variable.
 
+**When should I use `ba.grill` instead of just starting `ba.specify`?** When the idea itself is
+still loose — you're not confident you could explain it precisely to someone else yet. `ba.grill`
+sharpens the idea first, in the same conversation; `ba.specify`'s own deep mode already runs a
+similar clarification loop once you're turning something reasonably clear into requirements, so you
+don't need to run both back to back on the same clear idea.
+
+**How many questions should I expect from `ba.grill`?** Questions come in **rounds** — a round is
+simply every question that doesn't depend on an answer you haven't given yet, asked together. Count
+rounds, not questions: a handful of rounds (four is ordinary) with several questions each is normal
+and expected, not a sign something's wrong.
+
+**What if I don't know an answer during `ba.grill`?** Say so — "I don't know" is a valid, complete
+answer. It gets recorded as an open question with an owner, not re-asked with different wording. It
+often means the real next step is a quick prototype, sample, or short call rather than more
+discussion (what the skill calls **"ungrillable"**).
+
+**Does `ba.grill` write any files?** No, not by default — it's a conversation, not an artifact. Add
+`--capture` only if you want a short summary appended to the project's `kb/` (never a full
+transcript, and never implying anything is approved).
+
 ## Knowledge base
 
 **What should go in the `kb/`?** Durable, reusable facts: agreed terminology, decisions, constraints,

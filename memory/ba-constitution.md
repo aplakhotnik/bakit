@@ -94,6 +94,19 @@ and review-gated.
     Open questions are resolved/deferred/superseded by changing their `Status` (with a dated
     `Resolution`), never by removing the row. Extends §8 (Non-destructive) and §11 (append-only promotion).
 
+13. **Grill before committing (understanding gate)** — never commit to scope, produce a
+    requirements/charter/backlog artifact, or start building on a **loose or ambiguous** idea before
+    the understanding has been tested. When the input is vague, contradictory, or materially larger
+    than what was stated, run at least one **grilling round** (`ba.grill`): prerequisite-ordered
+    questions with options + implications, explicit pushback on implicit decisions and scope drift,
+    and an explicit split of the result into decisions / open questions / assumptions / **ungrillable**
+    items (those needing something to react to — prototype, sample, walkthrough — rather than more
+    discussion). Grilling is **stateless** by default (no artifact); it records knowledge only via
+    opt-in, append-only KB promotion (§11). It never self-approves and never replaces the analyst's
+    judgement — the analyst owns the scope and may decline or cut the session short at any point.
+    Skills with their own elicitation loop (e.g. `ba.specify` deep mode, `ba.discover.initiate`)
+    satisfy this rule through that loop.
+
 **"Next steps" block shape** (rendered as agent-appropriate runnable commands, derived from
 `workflow.md`):
 
